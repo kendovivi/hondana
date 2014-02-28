@@ -1,0 +1,29 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <GridView
+        android:id="@+id/shelf_recgridview_v"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:columnWidth="140dp"
+        android:numColumns="2"
+        android:layout_marginLeft="20dp" />
+    
+    <GridView
+        android:id="@+id/shelf_gridview_v "
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@id/shelf_recgridview_v"
+        android:columnWidth="90dp"
+        android:numColumns="auto_fit"
+        android:layout_marginTop="10dp" />
+    
+    <Button
+        android:id="@+id/test_show_selected_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="showSelected"/>
+
+</RelativeLayout>
