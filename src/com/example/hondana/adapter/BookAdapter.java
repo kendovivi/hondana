@@ -2,19 +2,18 @@ package com.example.hondana.adapter;
 
 
 
-import android.widget.Toast;
+import com.example.hondana.book.Book;
 
-import android.widget.CompoundButton;
-
-import android.widget.CompoundButton.OnCheckedChangeListener;
-
-import android.widget.CheckBox;
+import java.util.ArrayList;
 
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.example.hondana.R;
@@ -23,30 +22,30 @@ public class BookAdapter extends BaseAdapter {
     
     private Context mContext;
     /** test thumb nail imageId list */
-    private int[] mThumbNailsIdList;
+    private ArrayList<Book> mBookList;
     
-    public BookAdapter(Context context, boolean isRec){
+    public BookAdapter(Context context, ArrayList<Book> bookList){
         mContext = context;
-        mThumbNailsIdList = isRec? mThumbNailsRecIdList : mThumbNailsAllIdList;
+        mBookList = bookList;
     }
 
     @Override
     public int getCount() {
-        return mThumbNailsIdList.length;
+        return mBookList.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return null;
+        return mBookList.get(position);
     }
 
     @Override
     public long getItemId(int position) {
-        return 0;
+        return position;
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         
         View view = convertView;
         final ViewHolder viewHolder;
@@ -56,17 +55,19 @@ public class BookAdapter extends BaseAdapter {
         if (convertView == null) {
             view = inflater.inflate(R.layout.book_list_item, null);
             viewHolder = new ViewHolder();
-            //viewHolder.bookImageTitleView = (TextView) view.findViewById(R.id.bookimagetitle);
             viewHolder.bookImageView = (ImageView) view.findViewById(R.id.bookimage);
             viewHolder.bookCheckBox = (CheckBox) view.findViewById(R.id.checkbox);
+            //复选框点击监听
             viewHolder.bookCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener(){
 
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if (isChecked) {
                         buttonView.setChecked(true);
+                        mBookList.get(position).setBookSelected(true);
                     } else {
                         buttonView.setChecked(false);
+                        mBookList.get(position).setBookSelected(false);
                     }
                 }
                 
@@ -79,8 +80,7 @@ public class BookAdapter extends BaseAdapter {
             viewHolder = (ViewHolder) view.getTag();
         }
         
-        //viewHolder.bookImageTitleView.setText(String.valueOf(position));
-        viewHolder.bookImageView.setImageResource(mThumbNailsIdList[position]);
+        viewHolder.bookImageView.setImageBitmap(mBookList.get(position).getBookImage());
         return view;
     }
     
@@ -92,23 +92,4 @@ public class BookAdapter extends BaseAdapter {
         CheckBox bookCheckBox;
     }
     
-    private int[] mThumbNailsAllIdList = {
-            R.drawable.sample1, 
-            R.drawable.sample1,
-            R.drawable.sample3,
-            R.drawable.sample4,
-            R.drawable.sample5,
-            R.drawable.sample6,
-            R.drawable.sample7,
-            R.drawable.sample7,
-            R.drawable.sample8,
-            R.drawable.sample9,
-            R.drawable.sample10
-    };
-    
-    private int[] mThumbNailsRecIdList = {
-            R.drawable.sample5,
-            R.drawable.sample4
-    };
-
 }

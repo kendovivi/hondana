@@ -1,30 +1,21 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <!--
     <GridView
         android:id="@+id/shelf_gridview_v "
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
+        android:layout_marginTop="10dp"
         android:columnWidth="90dp"
-        android:numColumns="auto_fit"
-        android:layout_marginTop="10dp" />
-    
+        android:numColumns="auto_fit" />
+
     <Button
         android:id="@+id/test_show_selected_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone"
         android:text="@string/show_selected_books_btn_text"
-        android:onClick="showSelected"/>
-    -->
+        android:visibility="invisible" />
 
-    <LinearLayout
-        android:id="@+id/fragment_container_vertical"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:orientation="vertical" >
-    </LinearLayout>
 </RelativeLayout>
