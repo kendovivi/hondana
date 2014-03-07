@@ -1,6 +1,20 @@
 
 package com.example.hondana.fragment;
 
+import com.example.hondana.activity.ShowSelectedBooksActivity;
+
+import com.example.hondana.Const;
+
+import com.example.hondana.activity.ShowIntroductionActivity;
+
+import android.content.Intent;
+
+import android.widget.ImageView;
+
+import android.content.Context;
+
+import android.view.WindowManager;
+
 import android.view.View.OnTouchListener;
 
 import android.view.MotionEvent;
@@ -42,16 +56,26 @@ import android.app.Fragment;
 public class BookShelfFragment extends Fragment implements OnClickListener {
     private Book mBook;
     private ArrayList<Book> mBookList;
+    private ArrayList<Book> mSelectedBookList;
 
     private View view;
     private GridView mGridView;
     private Button showSelectedBtn;
 
+    private int mPosition;
+
+    private WindowManager mWindowManager;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mBook = new Book();
-        mBookList = mBook.getAllBooks(getActivity());
+        mSelectedBookList = Book.getSelectedList();
+        if (mSelectedBookList != null) {
+            mBookList = mSelectedBookList;
+        } else {
+            mBookList = mBook.getAllBooks(getActivity());
+        }
     }
 
     @Override
@@ -59,8 +83,9 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
         view = inflater.inflate(R.layout.fragment, container, false);
         mGridView = (GridView) view.findViewById(R.id.shelf_gridview_v);
         showSelectedBtn = (Button) view.findViewById(R.id.test_show_selected_btn);
+        mWindowManager = (WindowManager) getActivity().getSystemService(Context.WINDOW_SERVICE);
 
-        //显示选中按钮监听器设定
+        // 显示选中按钮监听器设定
         showSelectedBtn.setOnClickListener(this);
         // gridview 的适配器和监听器的设定
         mGridView.setAdapter(new BookAdapter(getActivity(), mBookList));
@@ -80,20 +105,28 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
 
         });
         mGridView.setOnItemClickListener(new OnItemClickListener() {
-
             @Override
             public void onItemClick(AdapterView<?> arg0, View itemView, int position, long arg3) {
-                Toast.makeText(getActivity(), String.valueOf(position), 1).show();
+                mPosition = position;
+                Intent intent = new Intent();
+                intent.setClass(getActivity(), ShowIntroductionActivity.class);
+                intent.putExtra(Const.BOOK_ONCLICK, position);
+                getActivity().startActivity(intent);
             }
 
         });
-        mGridView.setOnTouchListener(new OnTouchListener() {
 
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                return false;
-            }
-        });
+        // 移动监听
+        /*
+         * mGridView.setOnTouchListener(new OnTouchListener() {
+         * @Override public boolean onTouch(View v, MotionEvent event) { int x =
+         * (int) event.getX(); int y = (int) event.getY(); int action =
+         * event.getAction(); if (action == MotionEvent.ACTION_MOVE) {
+         * Toast.makeText(getActivity(), "当前坐标 X-" + x + " Y-" + y, 1).show();
+         * //
+         * mWindowManager.removeView((ImageView)mGridView.getChildAt(mPosition)
+         * .findViewById(R.id.bookimage)); } return false; } });
+         */
 
         return view;
     }
@@ -117,6 +150,20 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
             CheckBox checkBox = (CheckBox) mGridView.getChildAt(i).findViewById(R.id.checkbox);
             checkBox.setVisibility(View.INVISIBLE);
         }
+
+        ArrayList<Book> list = new ArrayList<Book>();
+        for (Book book : mBookList) {
+            if (book.getBookSelected()) {
+                list.add(book);
+            }
+        }
+        mSelectedBookList = list;
+        //替换当前fragment，显示选中的booklist
+        Book.setSelectedList(mSelectedBookList);
+        Intent intent = new Intent();
+        intent.setClass(getActivity(), ShowSelectedBooksActivity.class);
+        getActivity().startActivity(intent);
+        Toast.makeText(getActivity(), String.valueOf(mSelectedBookList.size()), Toast.LENGTH_SHORT).show();
         showSelectedBtn.setVisibility(View.INVISIBLE);
     }
 }

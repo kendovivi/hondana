@@ -1,6 +1,10 @@
 
 package com.example.hondana.book;
 
+import android.os.Parcel;
+
+import android.os.Parcelable;
+
 import java.io.Serializable;
 
 import android.content.Context;
@@ -10,7 +14,7 @@ import android.graphics.BitmapFactory;
 import com.example.hondana.R;
 import java.util.ArrayList;
 
-public class Book implements Serializable{
+public class Book implements Parcelable{
     /** 书名 */
     private String mBookName = "bookname";
     /** 书封面图片 */
@@ -18,6 +22,9 @@ public class Book implements Serializable{
     /** 是否为最近读的 */
     private boolean mBookIsRec = false;
     private boolean mBookSelected = false;
+
+    //要删除，之后改成parcelable
+    public static ArrayList<Book> sSelectedList = null;
 
     public Book(){};
     private Book(String bookName, Bitmap bookImage) {
@@ -29,6 +36,14 @@ public class Book implements Serializable{
         this.mBookName = bookName;
         this.mBookImage = bookImage;
         this.mBookIsRec = bookIsRec;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
     }
 
     public String getBookName() {
@@ -83,5 +98,11 @@ public class Book implements Serializable{
         bookList.add(new Book("sample5", BitmapFactory.decodeResource(c.getResources(), R.drawable.sample7), true));
         bookList.add(new Book("sample6", BitmapFactory.decodeResource(c.getResources(), R.drawable.sample6), true));
         return bookList;
+    }
+    public static ArrayList<Book> getSelectedList() {
+        return sSelectedList;
+    }
+    public static void setSelectedList(ArrayList<Book> selectedList) {
+        sSelectedList = selectedList;
     }
 }
