@@ -13,14 +13,14 @@
     
     <ImageView
         android:id="@+id/bookimage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent" />
 
     <CheckBox
         android:id="@+id/checkbox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:visibility="invisible" />
+        android:visibility="gone" />
 
 </RelativeLayout>
