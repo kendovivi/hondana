@@ -1,7 +1,9 @@
 
 package com.example.hondana.fragment;
 
-import com.example.hondana.activity.ShowSelectedBooksActivity;
+import android.app.FragmentTransaction;
+
+import android.app.FragmentManager;
 
 import com.example.hondana.Const;
 
@@ -160,10 +162,15 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
         mSelectedBookList = list;
         //替换当前fragment，显示选中的booklist
         Book.setSelectedList(mSelectedBookList);
-        Intent intent = new Intent();
+        /*Intent intent = new Intent();
         intent.setClass(getActivity(), ShowSelectedBooksActivity.class);
         getActivity().startActivity(intent);
-        Toast.makeText(getActivity(), String.valueOf(mSelectedBookList.size()), Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), String.valueOf(mSelectedBookList.size()), Toast.LENGTH_SHORT).show();*/
+
+        FragmentManager fm = getFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.replace(R.id.fragment_container_vertical, new BookShelfFragment());
+        ft.commit();
         showSelectedBtn.setVisibility(View.INVISIBLE);
     }
 }

@@ -1,6 +1,8 @@
 
 package com.example.hondana.activity;
 
+import android.view.MenuItem;
+
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 
@@ -83,6 +85,19 @@ public class FirstActivity extends Activity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.hondana_menu, menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_edit:
+                Book.setSelectedList(null);
+                Intent intent = new Intent();
+                intent.setClass(this, FirstActivity.class);
+                this.startActivity(intent);
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void initBooks() {

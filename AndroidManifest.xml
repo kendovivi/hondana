@@ -25,9 +25,6 @@
         <activity
             android:name="com.example.hondana.activity.ShowIntroductionActivity" >
         </activity>
-        <activity
-            android:name="com.example.hondana.activity.ShowSelectedBooksActivity" >
-        </activity>
     </application>
 
 </manifest>
