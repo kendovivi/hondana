@@ -23,6 +23,7 @@ public class BookAdapter extends BaseAdapter {
     private Context mContext;
     /** test thumb nail imageId list */
     private ArrayList<Book> mBookList;
+    private View view;
     
     public BookAdapter(Context context, ArrayList<Book> bookList){
         mContext = context;
@@ -47,10 +48,9 @@ public class BookAdapter extends BaseAdapter {
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
         
-        View view = convertView;
+        view = convertView;
         final ViewHolder viewHolder;
         LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        
         //没被回收的话，就直接使用之前的。若被回收，则创建新的，并添加一些新属性
         if (convertView == null) {
             view = inflater.inflate(R.layout.book_list_item, null);
@@ -64,22 +64,25 @@ public class BookAdapter extends BaseAdapter {
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if (isChecked) {
                         buttonView.setChecked(true);
+                        viewHolder.bookImageView.setBackgroundResource(R.drawable.border_pressed);
                         mBookList.get(position).setBookSelected(true);
+                        
                     } else {
                         buttonView.setChecked(false);
                         mBookList.get(position).setBookSelected(false);
                     }
                 }
-                
+
             });
-            view.setPadding(15, 0, 15, 0);
+            view.setPadding(15, 100, 15, 0);
+            
             //?
             view.setTag(viewHolder);
         } else {
             //?
             viewHolder = (ViewHolder) view.getTag();
         }
-        
+
         viewHolder.bookImageView.setImageBitmap(mBookList.get(position).getBookImage());
         return view;
     }

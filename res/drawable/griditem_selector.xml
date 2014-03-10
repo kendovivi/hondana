@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Selector xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item
+        android:state_pressed="true"
+        android:drawable="@android:drawable/bottom_bar" />
+    
+    <item
+        android:state_window_focused="true"
+        android:drawable="@android:drawable/btn_default" />
+    
+</Selector>

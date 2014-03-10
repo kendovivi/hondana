@@ -1,9 +1,7 @@
 
 package com.example.hondana.fragment;
 
-import android.app.FragmentTransaction;
-
-import android.app.FragmentManager;
+import android.widget.ImageView;
 
 import com.example.hondana.Const;
 
@@ -11,49 +9,27 @@ import com.example.hondana.activity.ShowIntroductionActivity;
 
 import android.content.Intent;
 
-import android.widget.ImageView;
-
-import android.content.Context;
-
-import android.view.WindowManager;
-
-import android.view.View.OnTouchListener;
-
-import android.view.MotionEvent;
-
-import android.view.MotionEvent;
-
-import android.view.View.OnClickListener;
-
-import android.widget.Toast;
-
 import android.widget.AdapterView.OnItemClickListener;
 
-import android.widget.Button;
-
-import android.widget.CheckBox;
-
-import android.widget.AdapterView;
-
-import android.widget.AdapterView.OnItemLongClickListener;
-
-import java.util.ArrayList;
-
-import com.example.hondana.book.Book;
-
-import com.example.hondana.adapter.BookAdapter;
-
-import android.widget.GridView;
-
-import com.example.hondana.R;
-
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
+import android.content.Context;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-
-import android.os.Bundle;
-
-import android.app.Fragment;
+import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.GridView;
+import com.example.hondana.R;
+import com.example.hondana.adapter.BookAdapter;
+import com.example.hondana.book.Book;
+import java.util.ArrayList;
 
 public class BookShelfFragment extends Fragment implements OnClickListener {
     private Book mBook;
@@ -102,18 +78,21 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
                     checkBox.setVisibility(View.VISIBLE);
                 }
                 showSelectedBtn.setVisibility(View.VISIBLE);
+                ImageView iv = (ImageView) itemView.findViewById(R.id.bookimage);
+                iv.setBackgroundResource(R.drawable.border_selected);
                 return false;
             }
 
         });
+
         mGridView.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> arg0, View itemView, int position, long arg3) {
-                mPosition = position;
-                Intent intent = new Intent();
-                intent.setClass(getActivity(), ShowIntroductionActivity.class);
-                intent.putExtra(Const.BOOK_ONCLICK, position);
-                getActivity().startActivity(intent);
+//                mPosition = position;
+//                Intent intent = new Intent();
+//                intent.setClass(getActivity(), ShowIntroductionActivity.class);
+//                intent.putExtra(Const.BOOK_ONCLICK, position);
+//                getActivity().startActivity(intent);
             }
 
         });
