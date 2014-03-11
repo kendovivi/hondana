@@ -2,10 +2,9 @@ package com.example.hondana.adapter;
 
 
 
-import com.example.hondana.book.Book;
+import com.example.hondana.view.BookGridView;
 
-import java.util.ArrayList;
-
+import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,20 +13,29 @@ import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.example.hondana.R;
+import com.example.hondana.book.Book;
+import java.util.ArrayList;
 
 public class BookAdapter extends BaseAdapter {
     
     private Context mContext;
     /** test thumb nail imageId list */
     private ArrayList<Book> mBookList;
+    /** 当前getView正在创建的item */
+    private Book mCurrentItem;
     private View view;
     
+    private Activity mActivity;
+    private BookGridView mGridView;
+
     public BookAdapter(Context context, ArrayList<Book> bookList){
         mContext = context;
         mBookList = bookList;
+        mActivity = (Activity) context;
     }
 
     @Override
@@ -51,6 +59,8 @@ public class BookAdapter extends BaseAdapter {
         view = convertView;
         final ViewHolder viewHolder;
         LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        mGridView = (BookGridView) mActivity.findViewById(R.id.shelf_gridview_v);
+        mCurrentItem = (Book) getItem(position);
         //没被回收的话，就直接使用之前的。若被回收，则创建新的，并添加一些新属性
         if (convertView == null) {
             view = inflater.inflate(R.layout.book_list_item, null);
@@ -75,8 +85,8 @@ public class BookAdapter extends BaseAdapter {
                 }
 
             });
-            view.setPadding(15, 100, 15, 0);
             
+            view.setPadding(15, 15, 15, 47);
             //?
             view.setTag(viewHolder);
         } else {
