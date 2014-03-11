@@ -67,6 +67,33 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
         showSelectedBtn.setOnClickListener(this);
         // gridview 的适配器和监听器的设定
         mGridView.setAdapter(new BookAdapter(getActivity(), mBookList));
+
+        //非编辑画面时单击监听，点击显示书籍详细信息
+        OnItemClickListener noEditOnItemClickListener = new OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View itemView, int position, long arg3) {
+                mPosition = position;
+                Intent intent = new Intent();
+                intent.setClass(getActivity(), ShowIntroductionActivity.class);
+                intent.putExtra(Const.BOOK_ONCLICK, position);
+                getActivity().startActivity(intent);
+            }
+        };
+        //编辑画面时单击监听，点击选中
+        final OnItemClickListener editOnItemClickListener = new OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View itemView, int position, long arg3) {
+                CheckBox cb = (CheckBox) itemView.findViewById(R.id.checkbox);
+                if (cb.isChecked()) {
+                    cb.setChecked(false);
+                } else {
+                    cb.setChecked(true);
+                }
+            }
+        };
+        mGridView.setOnItemClickListener(noEditOnItemClickListener);
         mGridView.setOnItemLongClickListener(new OnItemLongClickListener() {
 
             @Override
@@ -76,25 +103,16 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
                     CheckBox checkBox = (CheckBox) mGridView.getChildAt(i).findViewById(
                             R.id.checkbox);
                     checkBox.setVisibility(View.VISIBLE);
+                    //设置checkbox不会置顶，因此点击的都是imageview
+                    checkBox.setFocusable(false);
                 }
+                //在此更换imageview的单击监听，来控制checkbox的选中状态
+                mGridView.setOnItemClickListener(editOnItemClickListener);
                 showSelectedBtn.setVisibility(View.VISIBLE);
                 ImageView iv = (ImageView) itemView.findViewById(R.id.bookimage);
-                iv.setBackgroundResource(R.drawable.border_selected);
+                iv.setBackgroundResource(R.drawable.border_no);
                 return false;
             }
-
-        });
-
-        mGridView.setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> arg0, View itemView, int position, long arg3) {
-//                mPosition = position;
-//                Intent intent = new Intent();
-//                intent.setClass(getActivity(), ShowIntroductionActivity.class);
-//                intent.putExtra(Const.BOOK_ONCLICK, position);
-//                getActivity().startActivity(intent);
-            }
-
         });
 
         // 移动监听

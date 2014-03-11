@@ -9,9 +9,9 @@
         android:layout_height="wrap_content"
         android:columnWidth="90dp"
         android:numColumns="auto_fit"
-        android:listSelector="@android:color/transparent"
         android:verticalSpacing="0dp"
         android:horizontalSpacing="0dp"
+        android:listSelector="@android:color/transparent"
         android:layout_centerInParent="true" />
 
     <Button

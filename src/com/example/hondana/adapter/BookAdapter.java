@@ -69,6 +69,7 @@ public class BookAdapter extends BaseAdapter {
                         
                     } else {
                         buttonView.setChecked(false);
+                        viewHolder.bookImageView.setBackgroundResource(R.drawable.border_no);
                         mBookList.get(position).setBookSelected(false);
                     }
                 }
@@ -83,6 +84,7 @@ public class BookAdapter extends BaseAdapter {
             viewHolder = (ViewHolder) view.getTag();
         }
 
+        //viewHolder.bookImageView.setBackgroundResource(R.drawable.sample1);
         viewHolder.bookImageView.setImageBitmap(mBookList.get(position).getBookImage());
         return view;
     }

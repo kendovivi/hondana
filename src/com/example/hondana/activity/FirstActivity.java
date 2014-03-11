@@ -67,10 +67,6 @@ public class FirstActivity extends Activity {
         }
         fragmentTransaction.commit();
         mShowSelBtn = (Button) this.findViewById(R.id.test_show_selected_btn);
-
-        // 设置onClick效果，需要调查
-        // bookGridView.setSelector(android.R.color.transparent);
-
     }
 
     /*@Override
