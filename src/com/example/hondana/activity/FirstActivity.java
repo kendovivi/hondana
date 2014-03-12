@@ -30,7 +30,7 @@ import android.widget.GridView;
 import android.widget.Toast;
 import com.example.hondana.Const;
 import com.example.hondana.R;
-import com.example.hondana.adapter.BookAdapter;
+import com.example.hondana.adapter.BookShelfRowAdapter;
 import com.example.hondana.book.Book;
 import java.util.ArrayList;
 
@@ -63,7 +63,7 @@ public class FirstActivity extends Activity {
         } else {
             setContentView(R.layout.hondana_main_horizontal);
             mGridView = (GridView) this.findViewById(R.id.shelf_gridview_h);
-            mGridView.setAdapter(new BookAdapter(this, mAllBooks));
+            //mGridView.setAdapter(new BookShelfRowAdapter(this, mAllBooks));
         }
         fragmentTransaction.commit();
         mShowSelBtn = (Button) this.findViewById(R.id.test_show_selected_btn);
@@ -80,7 +80,7 @@ public class FirstActivity extends Activity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.hondana_menu, menu);
-        return false;
+        return true;
     }
 
     @Override

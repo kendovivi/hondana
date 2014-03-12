@@ -98,26 +98,6 @@ public class Book implements Parcelable{
         bookList.add(new Book("sample1", BitmapFactory.decodeResource(c.getResources(), R.drawable.sample1)));
         bookList.add(new Book("sample1", BitmapFactory.decodeResource(c.getResources(), R.drawable.sample1)));
         bookList.add(new Book("sample1", BitmapFactory.decodeResource(c.getResources(), R.drawable.sample1)));
-        bookList.add(new Book("sample1", BitmapFactory.decodeResource(c.getResources(), R.drawable.sample1)));
-        bookList.add(new Book("sample1", BitmapFactory.decodeResource(c.getResources(), R.drawable.sample1)));
-        bookList.add(new Book("sample1", BitmapFactory.decodeResource(c.getResources(), R.drawable.sample1)));
-        bookList.add(new Book("sample1", BitmapFactory.decodeResource(c.getResources(), R.drawable.sample1)));
-        bookList.add(new Book("sample1", BitmapFactory.decodeResource(c.getResources(), R.drawable.sample1)));
-        bookList.add(new Book("sample1", BitmapFactory.decodeResource(c.getResources(), R.drawable.sample1)));
-        bookList.add(new Book("sample1", BitmapFactory.decodeResource(c.getResources(), R.drawable.sample1)));
-        bookList.add(new Book("sample1", BitmapFactory.decodeResource(c.getResources(), R.drawable.sample1)));
-        bookList.add(new Book("sample1", BitmapFactory.decodeResource(c.getResources(), R.drawable.sample1)));
-        bookList.add(new Book("sample1", BitmapFactory.decodeResource(c.getResources(), R.drawable.sample1)));
-        bookList.add(new Book("sample1", BitmapFactory.decodeResource(c.getResources(), R.drawable.sample1)));
-        bookList.add(new Book("sample1", BitmapFactory.decodeResource(c.getResources(), R.drawable.sample1)));
-        bookList.add(new Book("sample1", BitmapFactory.decodeResource(c.getResources(), R.drawable.sample1)));
-        bookList.add(new Book("sample1", BitmapFactory.decodeResource(c.getResources(), R.drawable.sample1)));
-        bookList.add(new Book("sample1", BitmapFactory.decodeResource(c.getResources(), R.drawable.sample1)));
-        bookList.add(new Book("sample1", BitmapFactory.decodeResource(c.getResources(), R.drawable.sample1)));
-        bookList.add(new Book("sample1", BitmapFactory.decodeResource(c.getResources(), R.drawable.sample1)));
-        bookList.add(new Book("sample1", BitmapFactory.decodeResource(c.getResources(), R.drawable.sample1)));
-        bookList.add(new Book("sample1", BitmapFactory.decodeResource(c.getResources(), R.drawable.sample1)));
-        bookList.add(new Book("sample1", BitmapFactory.decodeResource(c.getResources(), R.drawable.sample1)));
         return bookList;
     }
 

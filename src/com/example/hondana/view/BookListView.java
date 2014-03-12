@@ -1,6 +1,9 @@
+
 package com.example.hondana.view;
 
-import com.example.hondana.adapter.BookAdapter;
+import android.widget.ListView;
+
+import com.example.hondana.adapter.BookShelfRowAdapter;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -10,7 +13,7 @@ import android.util.AttributeSet;
 import android.widget.GridView;
 import com.example.hondana.R;
 
-public class BookGridView extends GridView {
+public class BookListView extends ListView {
     /** 全屏幕高 */
     private int mScreenHeight;
     /** 全屏幕宽 */
@@ -25,39 +28,35 @@ public class BookGridView extends GridView {
     private boolean mIsBottom;
     private boolean mIsHeader;
 
-    public BookGridView(Context context, AttributeSet attrs) {
+    public BookListView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mShelfBackground = BitmapFactory.decodeResource(getResources(), R.drawable.new_shelf_background);
-        mShelfFooterBackground = BitmapFactory.decodeResource(getResources(), R.drawable.bookshelf_footer);
-        mShelfHeaderBackground = BitmapFactory.decodeResource(getResources(), R.drawable.bookshelf_header);
+        mShelfBackground = BitmapFactory.decodeResource(getResources(),
+                R.drawable.new_shelf_background);
+        mShelfFooterBackground = BitmapFactory.decodeResource(getResources(),
+                R.drawable.bookshelf_footer);
+        mShelfHeaderBackground = BitmapFactory.decodeResource(getResources(),
+                R.drawable.bookshelf_header);
         mNumOfColumns = 4;
     }
 
     /**
-     * 计算当前屏幕的总行数，来描画书架背景图片
-     * 滚轴滚动超过一行时，该方法被执行
+     * 计算当前屏幕的总行数，来描画书架背景图片 滚轴滚动超过一行时，该方法被执行
      */
     @Override
     protected void dispatchDraw(Canvas canvas) {
-        mIsBottom = BookAdapter.getIsGridViewBottom();
-        mIsHeader = BookAdapter.getIsGridViewHeader();
-        //获取
-        int rowCount = getChildCount()/mNumOfColumns;
-        int top = rowCount > 0? getChildAt(0).getTop() : 0;
+        // mIsBottom = BookShelfRowAdapter.getIsGridViewBottom();
+        // mIsHeader = BookShelfRowAdapter.getIsGridViewHeader();
+        // 获取
+        int rowCount = getChildCount() / mNumOfColumns;
+        int top = rowCount > 0 ? getChildAt(0).getTop() : 0;
         int backgroundImgHeight = mShelfBackground.getHeight();
         int backgroundImgWidth = mShelfBackground.getWidth();
         int mScreenHeight = getHeight();
         int mScreenWidth = getWidth();
 
-        for (int y=top; y < mScreenHeight; y += backgroundImgHeight) {
-            for (int x=0; x < mScreenWidth; x+=backgroundImgWidth) {
-                if (y > mScreenHeight - backgroundImgHeight && mIsBottom) {
-                    canvas.drawBitmap(mShelfFooterBackground, x, y, null);
-                } else if(y == top && mIsHeader){
-                    canvas.drawBitmap(mShelfHeaderBackground, x, y, null);
-                } else {
-                    canvas.drawBitmap(mShelfBackground, x, y, null);
-                }
+        for (int y = top; y < mScreenHeight; y += backgroundImgHeight) {
+            for (int x = 0; x < mScreenWidth; x += backgroundImgWidth) {
+                canvas.drawBitmap(mShelfBackground, x, y, null);
             }
         }
         super.dispatchDraw(canvas);

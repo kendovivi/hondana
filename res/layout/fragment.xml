@@ -3,8 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <com.example.hondana.view.BookGridView
-        android:id="@+id/shelf_gridview_v"
+    <com.example.hondana.view.BookListView
+        android:id="@+id/shelf_listview_v"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:columnWidth="90dp"
@@ -18,7 +18,7 @@
         android:id="@+id/test_show_selected_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/shelf_gridview_v"
+        android:layout_below="@id/shelf_listview_v"
         android:text="@string/show_selected_books_btn_text"
         android:visibility="invisible" />
 

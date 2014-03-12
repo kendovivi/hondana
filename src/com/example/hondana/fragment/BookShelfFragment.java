@@ -1,38 +1,36 @@
 
 package com.example.hondana.fragment;
 
-import android.provider.OpenableColumns;
+import android.widget.LinearLayout;
 
-import android.view.Menu;
-import android.view.MenuInflater;
+import android.widget.ListView;
 
-import android.widget.ImageView;
-
-import com.example.hondana.Const;
-
-import com.example.hondana.activity.ShowIntroductionActivity;
-
-import android.content.Intent;
-
-import android.widget.AdapterView.OnItemClickListener;
+import com.example.hondana.adapter.BookShelfRowInfo;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.GridView;
+import android.widget.ImageView;
+import com.example.hondana.Const;
 import com.example.hondana.R;
-import com.example.hondana.adapter.BookAdapter;
+import com.example.hondana.activity.ShowIntroductionActivity;
+import com.example.hondana.adapter.BookShelfRowAdapter;
 import com.example.hondana.book.Book;
 import java.util.ArrayList;
 
@@ -40,9 +38,12 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
     private Book mBook;
     private ArrayList<Book> mBookList;
     private ArrayList<Book> mSelectedBookList;
+    private BookShelfRowInfo mRowInfo;
 
     private View view;
-    private GridView mGridView;
+    private ListView mListView;
+    private LinearLayout mBookshelfHeaderView;
+    private LinearLayout mBookshelfFooterView;
     private Button showSelectedBtn;
 
     private int mPosition;
@@ -59,19 +60,24 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
         } else {
             mBookList = mBook.getAllBooks(getActivity());
         }
+        mRowInfo = new BookShelfRowInfo(mBookList, 4);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment, container, false);
-        mGridView = (GridView) view.findViewById(R.id.shelf_gridview_v);
+        mListView = (ListView) view.findViewById(R.id.shelf_listview_v);
         showSelectedBtn = (Button) view.findViewById(R.id.test_show_selected_btn);
         mWindowManager = (WindowManager) getActivity().getSystemService(Context.WINDOW_SERVICE);
 
         // 显示选中按钮监听器设定
         showSelectedBtn.setOnClickListener(this);
         // gridview 的适配器和监听器的设定
-        mGridView.setAdapter(new BookAdapter(getActivity(), mBookList));
+        mBookshelfFooterView = (LinearLayout) inflater.inflate(R.layout.bookshelf_footer, mListView, false);
+        mBookshelfHeaderView = (LinearLayout) inflater.inflate(R.layout.bookshelf_header, mListView, false);
+        mListView.addFooterView(mBookshelfFooterView);
+        mListView.addHeaderView(mBookshelfHeaderView);
+        mListView.setAdapter(new BookShelfRowAdapter(getActivity(), mRowInfo.getRowList()));
 
         //非编辑画面时单击监听，点击显示书籍详细信息
         OnItemClickListener noEditOnItemClickListener = new OnItemClickListener() {
@@ -98,29 +104,29 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
                 }
             }
         };
-        mGridView.setOnItemClickListener(noEditOnItemClickListener);
-        mGridView.setOnItemLongClickListener(new OnItemLongClickListener() {
-
-            @Override
-            public boolean onItemLongClick(AdapterView<?> arg0, View itemView, int position,
-                    long arg3) {
-                for (int i = 0; i < mGridView.getChildCount(); i++) {
-                    CheckBox checkBox = (CheckBox) mGridView.getChildAt(i).findViewById(
-                            R.id.checkbox);
-                    checkBox.setVisibility(View.VISIBLE);
-                    //设置checkbox不会置顶，因此点击的都是imageview
-                    checkBox.setFocusable(false);
-                }
-                //在此更换imageview的单击监听，来控制checkbox的选中状态
-                mGridView.setOnItemClickListener(editOnItemClickListener);
-                showSelectedBtn.setVisibility(View.VISIBLE);
-                ImageView iv = (ImageView) itemView.findViewById(R.id.bookimage);
-                iv.setBackgroundResource(R.drawable.border_no);
-                getActivity().openOptionsMenu();
-                //getActivity().findViewById(R.id.menu_show_selected).setVisibility(View.VISIBLE);
-                return false;
-            }
-        });
+//        mListView.setOnItemClickListener(noEditOnItemClickListener);
+//        mListView.setOnItemLongClickListener(new OnItemLongClickListener() {
+//
+//            @Override
+//            public boolean onItemLongClick(AdapterView<?> arg0, View itemView, int position,
+//                    long arg3) {
+//                for (int i = 0; i < mListView.getChildCount(); i++) {
+//                    CheckBox checkBox = (CheckBox) mListView.getChildAt(i).findViewById(
+//                            R.id.checkbox);
+//                    checkBox.setVisibility(View.VISIBLE);
+//                    //设置checkbox不会置顶，因此点击的都是imageview
+//                    checkBox.setFocusable(false);
+//                }
+//                //在此更换imageview的单击监听，来控制checkbox的选中状态
+//                mListView.setOnItemClickListener(editOnItemClickListener);
+//                showSelectedBtn.setVisibility(View.VISIBLE);
+//                ImageView iv = (ImageView) itemView.findViewById(R.id.bookimage);
+//                iv.setBackgroundResource(R.drawable.border_no);
+//                getActivity().openOptionsMenu();
+//                //getActivity().findViewById(R.id.menu_show_selected).setVisibility(View.VISIBLE);
+//                return false;
+//            }
+//        });
 
         // 移动监听
         /*
@@ -139,7 +145,6 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        // TODO Auto-generated method stub
         super.onCreateOptionsMenu(menu, inflater);
     }
     @Override
@@ -157,8 +162,8 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
     }
 
     private void showSelected() {
-        for (int i = 0; i < mGridView.getChildCount(); i++) {
-            CheckBox checkBox = (CheckBox) mGridView.getChildAt(i).findViewById(R.id.checkbox);
+        for (int i = 0; i < mListView.getChildCount(); i++) {
+            CheckBox checkBox = (CheckBox) mListView.getChildAt(i).findViewById(R.id.checkbox);
             checkBox.setVisibility(View.INVISIBLE);
         }
 
