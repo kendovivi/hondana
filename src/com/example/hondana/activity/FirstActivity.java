@@ -80,7 +80,7 @@ public class FirstActivity extends Activity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.hondana_menu, menu);
-        return true;
+        return false;
     }
 
     @Override

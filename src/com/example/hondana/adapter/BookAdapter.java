@@ -27,6 +27,18 @@ public class BookAdapter extends BaseAdapter {
     private ArrayList<Book> mBookList;
     /** 当前getView正在创建的item */
     private Book mCurrentItem;
+    /** 当前正在创建的getView的item所处行数 */
+    private int mCurrentRow;
+    /** 当前正在创建的getView的item所处行数是否为gridView的第一行 */
+    private static boolean mIsHeader;
+    /** 当前正在创建的getView的item所处行数是否为gridView的最后一行 */
+    private static boolean mIsBottom;
+    /** 前一个创建的getView的item的位置 */
+    private int lastPosition = -1;
+    private final static int SCROLL_UP = 0;
+    private final static int SCROLL_DOWN = 1;
+    /** 滚轴滚动方向 */
+    private int mScrollOrientation;
     private View view;
     
     private Activity mActivity;
@@ -36,6 +48,7 @@ public class BookAdapter extends BaseAdapter {
         mContext = context;
         mBookList = bookList;
         mActivity = (Activity) context;
+        mScrollOrientation = SCROLL_DOWN;
     }
 
     @Override
@@ -53,8 +66,34 @@ public class BookAdapter extends BaseAdapter {
         return position;
     }
 
+    /**
+     * 滚轴滚动时，每个item都会call这个方法
+     * 该处将当前行，是否为gridview底部等信息传入BookGridView，dispatchDraw会根据此信息来描绘背景（顶部，内容，底部）
+     *
+     */
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
+        //将背景描绘信息传入BookGridView
+        int itemsPerRow = 0;
+        if (mGridView != null) {
+            itemsPerRow = mGridView.getNumColumns();
+        }
+        if (position > lastPosition) {
+            mScrollOrientation = SCROLL_DOWN;
+        } else {
+            mScrollOrientation = SCROLL_UP;
+        }
+        if (position >= getCount() - (itemsPerRow + 1) && mScrollOrientation == SCROLL_DOWN) {
+            setIsGridViewBottom(true);
+        } else {
+            setIsGridViewBottom(false);
+        }
+        if (position <= itemsPerRow || position == 0) {
+            setIsGridViewHeader(true);
+        } else {
+            setIsGridViewHeader(false);
+        }
+        lastPosition = position;
         
         view = convertView;
         final ViewHolder viewHolder;
@@ -99,12 +138,22 @@ public class BookAdapter extends BaseAdapter {
         return view;
     }
     
-   
-    
     static class ViewHolder{
         ImageView bookImageView; 
         TextView bookImageTitleView;
         CheckBox bookCheckBox;
     }
     
+    private void setIsGridViewBottom(boolean isBottom) {
+        this.mIsBottom = isBottom;
+    }
+    public static boolean getIsGridViewBottom() {
+        return mIsBottom;
+    }
+    private void setIsGridViewHeader(boolean isHeader) {
+        this.mIsHeader = isHeader;
+    }
+    public static boolean getIsGridViewHeader() {
+        return mIsHeader;
+    }
 }

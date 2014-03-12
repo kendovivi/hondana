@@ -4,4 +4,9 @@
         android:id="@+id/menu_edit"
         android:icon="@android:drawable/ic_menu_revert"
         android:showAsAction="always" />
+
+    <item
+        android:id="@+id/menu_show_selected"
+        android:icon="@android:drawable/ic_menu_gallery"
+        android:showAsAction="always" />
 </menu>

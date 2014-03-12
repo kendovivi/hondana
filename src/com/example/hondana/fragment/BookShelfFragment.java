@@ -1,6 +1,11 @@
 
 package com.example.hondana.fragment;
 
+import android.provider.OpenableColumns;
+
+import android.view.Menu;
+import android.view.MenuInflater;
+
 import android.widget.ImageView;
 
 import com.example.hondana.Const;
@@ -111,6 +116,8 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
                 showSelectedBtn.setVisibility(View.VISIBLE);
                 ImageView iv = (ImageView) itemView.findViewById(R.id.bookimage);
                 iv.setBackgroundResource(R.drawable.border_no);
+                getActivity().openOptionsMenu();
+                //getActivity().findViewById(R.id.menu_show_selected).setVisibility(View.VISIBLE);
                 return false;
             }
         });
@@ -130,6 +137,11 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
         return view;
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        // TODO Auto-generated method stub
+        super.onCreateOptionsMenu(menu, inflater);
+    }
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
