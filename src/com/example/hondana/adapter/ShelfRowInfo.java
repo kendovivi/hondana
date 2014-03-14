@@ -5,25 +5,25 @@ import com.example.hondana.book.Book;
 
 import java.util.ArrayList;
 
-public class BookShelfRowInfo {
+public class ShelfRowInfo {
 
-    private ArrayList<BookShelfRow> mRowList;
+    private ArrayList<ShelfRow> mRowList;
     private ArrayList<Book> mBookList;
     private int mItemNumInRow;
     private int mRowNums;
 
-    public BookShelfRowInfo(ArrayList<Book> bookList, int itemNumInRow) {
+    public ShelfRowInfo(ArrayList<Book> bookList, int itemNumInRow) {
         this.mItemNumInRow = itemNumInRow;
         this.mBookList = bookList;
         this.mRowNums = CaculateRowNum();
-        this.mRowList = new ArrayList<BookShelfRow>();
+        this.mRowList = new ArrayList<ShelfRow>();
         initRowsInfo();
     }
 
     private void initRowsInfo() {
         int book_j = 0;
         for (int row_i = 0; row_i <= mRowNums - 1; row_i++) {
-            BookShelfRow row = new BookShelfRow();
+            ShelfRow row = new ShelfRow();
             for (; book_j <= mItemNumInRow * (row_i+1) - 1; book_j++) {
                 //如果最后一行row不满
                 if (book_j >= mBookList.size()){
@@ -40,7 +40,7 @@ public class BookShelfRowInfo {
                 .size() / mItemNumInRow + 1;
     }
 
-    public ArrayList<BookShelfRow> getRowList() {
+    public ArrayList<ShelfRow> getRowList() {
         return mRowList;
     }
 

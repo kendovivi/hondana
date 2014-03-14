@@ -1,6 +1,12 @@
 
 package com.example.hondana.adapter;
 
+import android.widget.Button;
+
+import com.example.hondana.fragment.BookShelfFragment;
+
+import android.view.View.OnLongClickListener;
+
 import com.example.hondana.Const;
 
 import com.example.hondana.activity.ShowIntroductionActivity;
@@ -35,12 +41,13 @@ import com.example.hondana.R;
 import com.example.hondana.book.Book;
 import java.util.ArrayList;
 
-public class BookShelfRowAdapter extends BaseAdapter{
+public class ShelfRowAdapter extends BaseAdapter{
 
     private Context mContext;
-    private ArrayList<BookShelfRow> mRowList;
+    private BookShelfFragment mBookShelfFragment;
+    private ArrayList<ShelfRow> mRowList;
     /** 当前正在创建的getView的item所处行数 */
-    private BookShelfRow mCurrentRow;
+    private ShelfRow mCurrentRow;
     /** 当前正在创建的getView的item所处行数是否为gridView的第一行 */
     private static boolean mIsHeader;
     /** 当前正在创建的getView的item所处行数是否为gridView的最后一行 */
@@ -57,9 +64,10 @@ public class BookShelfRowAdapter extends BaseAdapter{
     private Activity mActivity;
     private ListView mListView;
     private ViewHolder viewHolder;
-
-    public BookShelfRowAdapter(Context context, ArrayList<BookShelfRow> rowList) {
+    
+    public ShelfRowAdapter(Context context, ArrayList<ShelfRow> rowList, BookShelfFragment bookShelfFragment) {
         mContext = context;
+        mBookShelfFragment = bookShelfFragment;
         mActivity = (Activity) context;
         mRowList = rowList;
         mScrollOrientation = SCROLL_DOWN;
@@ -85,75 +93,23 @@ public class BookShelfRowAdapter extends BaseAdapter{
      * 该处将当前行，是否为gridview底部等信息传入BookGridView，dispatchDraw会根据此信息来描绘背景（顶部，内容，底部）
      */
     @Override
-    public View getView(final int position, View convertView, ViewGroup parent) {
-        // 将背景描绘信息传入BookGridView
-        // int itemsPerRow = 0;
-        // if (mListView != null) {
-        // //itemsPerRow = mListView.getNumColumns();
-        // }
-        // if (position > lastPosition) {
-        // mScrollOrientation = SCROLL_DOWN;
-        // } else {
-        // mScrollOrientation = SCROLL_UP;
-        // }
-        // if (position >= getCount() - (itemsPerRow + 1) && mScrollOrientation
-        // == SCROLL_DOWN) {
-        // setIsGridViewBottom(true);
-        // } else {
-        // setIsGridViewBottom(false);
-        // }
-        // if (position <= itemsPerRow || position == 0) {
-        // setIsGridViewHeader(true);
-        // } else {
-        // setIsGridViewHeader(false);
-        // }
-        // lastPosition = position;
-
+    public View getView(final int row, View convertView, ViewGroup parent) {
         mRowView = (LinearLayout) convertView;
         LayoutInflater inflater = (LayoutInflater) mContext
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mListView = (ListView) mActivity.findViewById(R.id.shelf_listview_v);
-        mCurrentRow = (BookShelfRow) getItem(position);
+        mCurrentRow = (ShelfRow) getItem(row);
         // 没被回收的话，就直接使用之前的。若被回收，则创建新的，并添加一些新属性
         if (convertView == null) {
             mRowView = (LinearLayout) inflater.inflate(R.layout.bookshelf_row, null);
-
             for (int i = 0; i < mCurrentRow.getBookListInRow().size(); i++) {
                 mItemView = (RelativeLayout) inflater.inflate(R.layout.book_list_item, mRowView,
                         false);
                 viewHolder = new ViewHolder();
                 viewHolder.bookImageView = (ImageView) mItemView.findViewById(R.id.bookimage);
-                viewHolder.bookImageView.setImageBitmap(mCurrentRow.getBookListInRow().get(i).getBookImage());
                 viewHolder.bookCheckBox = (CheckBox) mItemView.findViewById(R.id.checkbox);
-                // 复选框点击监听
-                viewHolder.bookCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-
-                    @Override
-                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        if (isChecked) {
-                            buttonView.setChecked(true);
-                            viewHolder.bookImageView
-                                    .setBackgroundResource(R.drawable.border_pressed);
-                            // mRowList.get(position).setBookSelected(true);
-
-                        } else {
-                            buttonView.setChecked(false);
-                            viewHolder.bookImageView.setBackgroundResource(R.drawable.border_no);
-                            // mBookList.get(position).setBookSelected(false);
-                        }
-                    }
-
-                });
-                mItemView.setOnClickListener(new OnClickListener() {
-                    
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent();
-                        intent.setClass(mContext, ShowIntroductionActivity.class);
-                        intent.putExtra(Const.BOOK_ONCLICK, 0);
-                        mActivity.startActivity(intent);
-                    }
-                });
+                viewHolder.bookImageView.setImageBitmap(mCurrentRow.getBookListInRow().get(i).getBookImage());
+                
                 mRowView.addView(mItemView);
             }
             mRowView.setPadding(10, 5, 15, 47);
@@ -164,9 +120,56 @@ public class BookShelfRowAdapter extends BaseAdapter{
             // ?
             viewHolder = (ViewHolder) mRowView.getTag();
         }
+        
+        //各个item的监听, 要修改，是否需要放到fragment
+        for (int i=0; i < mRowView.getChildCount(); i++) {
+            final int column = i;
+            final RelativeLayout bookView = (RelativeLayout) mRowView.getChildAt(i);
+            //为什么这样写出错
+//            viewHolder.bookImageView = (ImageView) bookView.findViewById(R.id.bookimage);
+//            viewHolder.bookCheckBox = (CheckBox) bookView.findViewById(R.id.checkbox);
+            final ImageView bookImage = (ImageView) bookView.findViewById(R.id.bookimage);
+            CheckBox checkBox = (CheckBox) bookView.findViewById(R.id.checkbox);
+            checkBox.setOnCheckedChangeListener(mBookShelfFragment.onCheckedChangeListener(row, column, bookImage));
+            bookView.setOnClickListener(mBookShelfFragment.onNoEditClickListener(row, column));
+            
+            bookView.setOnLongClickListener(new OnLongClickListener() {
+                
+                @Override
+                public boolean onLongClick(View paramView) {
+                    final Button btn = (Button) mListView.findViewById(R.id.show_selected_btn);
+                    btn.setVisibility(View.VISIBLE);
+                    btn.setOnClickListener(new OnClickListener() {
+                        
+                        @Override
+                        public void onClick(View paramView) {
+                            for (int i=1;i<=mRowList.size();i++){
+                                LinearLayout rowView = (LinearLayout) mListView.getChildAt(i);
+                                for (int j=0;j<rowView.getChildCount();j++){
+                                    CheckBox cb = (CheckBox) rowView.getChildAt(j).findViewById(R.id.checkbox);
+                                    cb.setVisibility(View.INVISIBLE);
+                                }
+                            }
+                            btn.setVisibility(View.GONE);
+                            
+                            mBookShelfFragment.showSelected();
+                        }
+                    });
+                    
+                    //listview中第一行是header，目前为止不包含cell
+                    for (int i=1;i<=mRowList.size();i++){
+                        LinearLayout rowView = (LinearLayout) mListView.getChildAt(i);
+                        for (int j=0;j<rowView.getChildCount();j++){
+                            CheckBox cb = (CheckBox) rowView.getChildAt(j).findViewById(R.id.checkbox);
+                            cb.setVisibility(View.VISIBLE);
+                            rowView.getChildAt(j).setOnClickListener(mBookShelfFragment.onEditClickListener());
+                        }
+                    }
+                    return false;
+                }
+            });
+        }
 
-        // viewHolder.bookImageView.setBackgroundResource(R.drawable.sample1);
-        // viewHolder.bookImageView.setImageBitmap(mRowList.get(position).getBookImage());
         return mRowView;
     }
 
@@ -174,21 +177,5 @@ public class BookShelfRowAdapter extends BaseAdapter{
         ImageView bookImageView;
         TextView bookImageTitleView;
         CheckBox bookCheckBox;
-    }
-
-    private void setIsGridViewBottom(boolean isBottom) {
-        this.mIsBottom = isBottom;
-    }
-
-    public static boolean getIsGridViewBottom() {
-        return mIsBottom;
-    }
-
-    private void setIsGridViewHeader(boolean isHeader) {
-        this.mIsHeader = isHeader;
-    }
-
-    public static boolean getIsGridViewHeader() {
-        return mIsHeader;
     }
 }

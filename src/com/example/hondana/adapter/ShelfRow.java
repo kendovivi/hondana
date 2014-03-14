@@ -4,10 +4,10 @@ import com.example.hondana.book.Book;
 
 import java.util.ArrayList;
 
-public class BookShelfRow {
+public class ShelfRow {
     private ArrayList<Book> mBookList;
     
-    public BookShelfRow() {
+    public ShelfRow() {
         mBookList = new ArrayList<Book>();
     }
 

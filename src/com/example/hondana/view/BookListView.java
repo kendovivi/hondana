@@ -3,7 +3,7 @@ package com.example.hondana.view;
 
 import android.widget.ListView;
 
-import com.example.hondana.adapter.BookShelfRowAdapter;
+import com.example.hondana.adapter.ShelfRowAdapter;
 
 import android.content.Context;
 import android.graphics.Bitmap;

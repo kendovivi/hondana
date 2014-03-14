@@ -90,14 +90,6 @@ public class Book implements Parcelable{
         bookList.add(new Book("sample8", BitmapFactory.decodeResource(c.getResources(), R.drawable.sample8)));
         bookList.add(new Book("sample9", BitmapFactory.decodeResource(c.getResources(), R.drawable.sample9)));
         bookList.add(new Book("sample10", BitmapFactory.decodeResource(c.getResources(), R.drawable.sample10)));
-        bookList.add(new Book("sample1", BitmapFactory.decodeResource(c.getResources(), R.drawable.sample1)));
-        bookList.add(new Book("sample1", BitmapFactory.decodeResource(c.getResources(), R.drawable.sample1)));
-        bookList.add(new Book("sample1", BitmapFactory.decodeResource(c.getResources(), R.drawable.sample1)));
-        bookList.add(new Book("sample1", BitmapFactory.decodeResource(c.getResources(), R.drawable.sample1)));
-        bookList.add(new Book("sample1", BitmapFactory.decodeResource(c.getResources(), R.drawable.sample1)));
-        bookList.add(new Book("sample1", BitmapFactory.decodeResource(c.getResources(), R.drawable.sample1)));
-        bookList.add(new Book("sample1", BitmapFactory.decodeResource(c.getResources(), R.drawable.sample1)));
-        bookList.add(new Book("sample1", BitmapFactory.decodeResource(c.getResources(), R.drawable.sample1)));
         return bookList;
     }
 

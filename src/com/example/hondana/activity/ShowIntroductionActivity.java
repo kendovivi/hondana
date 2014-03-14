@@ -12,8 +12,11 @@ import com.example.hondana.book.Book;
 import java.util.ArrayList;
 
 public class ShowIntroductionActivity extends Activity {
-    private int mBookId;
-    private Book mBook;
+    private static final int FROM_ALL = 0;
+    private static final int FROM_SECLECTED = 1;
+
+    private int mBookPosition;
+    private Book mBookToShow;
     private ArrayList<Book> mBookList;
 
     @Override
@@ -21,17 +24,26 @@ public class ShowIntroductionActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.book_introduction);
 
-        Intent intent = getIntent();
-        mBookId = intent.getIntExtra(Const.BOOK_ONCLICK, 0);
-
         Book book = new Book();
-        mBookList = book.getAllBooks(this);
-        mBook = mBookList.get(mBookId);
+        Intent intent = getIntent();
+        mBookPosition = intent.getIntExtra(Const.BOOK_ONCLICK, 0);
+        int flag = intent.getIntExtra(Const.FROM_ALL_OR_SEL, 0) ;
+
+        switch (flag) {
+            case FROM_ALL:
+                mBookList = book.getAllBooks(this);
+                break;
+            case FROM_SECLECTED:
+                mBookList = Book.getSelectedList();
+                break;
+        }
+
+        mBookToShow = mBookList.get(mBookPosition);
 
         ImageView bookImageView = (ImageView) this.findViewById(R.id.intro_book_image);
         TextView bookTextView = (TextView) this.findViewById(R.id.intro_book_name);
 
-        bookImageView.setImageBitmap(mBook.getBookImage());
-        bookTextView.setText(mBook.getBookName());
+        bookImageView.setImageBitmap(mBookToShow.getBookImage());
+        bookTextView.setText(mBookToShow.getBookName());
     }
 }

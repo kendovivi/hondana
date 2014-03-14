@@ -30,7 +30,7 @@ import android.widget.GridView;
 import android.widget.Toast;
 import com.example.hondana.Const;
 import com.example.hondana.R;
-import com.example.hondana.adapter.BookShelfRowAdapter;
+import com.example.hondana.adapter.ShelfRowAdapter;
 import com.example.hondana.book.Book;
 import java.util.ArrayList;
 
