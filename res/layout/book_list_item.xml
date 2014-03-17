@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/gd_item_layout"
-    android:layout_width="75dip"
-    android:layout_height="100dip"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
     android:gravity="center_horizontal"
     android:layout_marginLeft="8dip" >
 
     <ImageView
         android:id="@+id/bookimage"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_width="75dip"
+        android:layout_height="100dip"
         android:background="@drawable/border" />
 
     <FrameLayout
@@ -24,5 +24,27 @@
             android:layout_height="fill_parent"
             android:visibility="gone" />
     </FrameLayout>
+
+    <RelativeLayout
+        android:id="@+id/item_details_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_toRightOf="@id/bookimage"
+        android:background="@drawable/border_pressed"
+        android:padding="15dip"
+        android:layout_marginLeft="5dip"
+        android:visibility="gone" >
+
+        <TextView
+            android:id="@+id/book_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/book_author"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/book_title" />
+    </RelativeLayout>"
 
 </RelativeLayout>

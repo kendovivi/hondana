@@ -37,6 +37,7 @@ import java.util.ArrayList;
 public class FirstActivity extends Activity {
     /** gridview for all books */
     private GridView mGridView;
+    private int mShelfStyle;
 
     private Book mBook;
     private ArrayList<Book> mAllBooks;
@@ -46,35 +47,38 @@ public class FirstActivity extends Activity {
 
     private FragmentManager fragmentManager;
     private FragmentTransaction fragmentTransaction;
+    private BookShelfFragment mBookShelfFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mBook = new Book();
+        // 初次默认为书架
+        Intent intent = getIntent();
+        mShelfStyle = intent.getIntExtra(Const.SHELF_STYLE, Const.GRID);
         initBooks();
-
         fragmentManager = getFragmentManager();
         fragmentTransaction = fragmentManager.beginTransaction();
+        mBookShelfFragment = BookShelfFragment.newInstance(mShelfStyle);
         // 纵向
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             setContentView(R.layout.hondana_main_vertical);
-            fragmentTransaction.add(R.id.fragment_container_vertical, new BookShelfFragment());
+            fragmentTransaction.add(R.id.fragment_container_vertical, mBookShelfFragment);
             // 横向
         } else {
             setContentView(R.layout.hondana_main_horizontal);
             mGridView = (GridView) this.findViewById(R.id.shelf_gridview_h);
-            //mGridView.setAdapter(new BookShelfRowAdapter(this, mAllBooks));
+            // mGridView.setAdapter(new BookShelfRowAdapter(this, mAllBooks));
         }
         fragmentTransaction.commit();
         mShowSelBtn = (Button) this.findViewById(R.id.test_show_selected_btn);
     }
 
-    /*@Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-        menu.add(0, 1, 0, "menu1");
-        menu.add(0, 2, 0,"menu2");
-    }*/
+    /*
+     * @Override public void onCreateContextMenu(ContextMenu menu, View v,
+     * ContextMenuInfo menuInfo) { super.onCreateContextMenu(menu, v, menuInfo);
+     * menu.add(0, 1, 0, "menu1"); menu.add(0, 2, 0,"menu2"); }
+     */
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -85,12 +89,27 @@ public class FirstActivity extends Activity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        Intent intent = new Intent();
         switch (item.getItemId()) {
             case R.id.menu_edit:
                 Book.setSelectedList(null);
-                Intent intent = new Intent();
                 intent.setClass(this, FirstActivity.class);
                 this.startActivity(intent);
+                break;
+            case R.id.menu_change_shelf_style:
+                int shelfStyle = mBookShelfFragment.getShelfStyle();
+                if (shelfStyle == Const.GRID) {
+                    shelfStyle = Const.LIST;
+                } else {
+                    shelfStyle = Const.GRID;
+                }
+                fragmentTransaction = fragmentManager.beginTransaction();
+                mBookShelfFragment = BookShelfFragment.newInstance(shelfStyle);
+                fragmentTransaction.replace(R.id.fragment_container_vertical, mBookShelfFragment);
+                fragmentTransaction.commit();
+                // intent.setClass(this, FirstActivity.class);
+                // intent.putExtra(Const.SHELF_STYLE, shelfStyle);
+                // this.startActivity(intent);
                 break;
         }
         return super.onOptionsItemSelected(item);

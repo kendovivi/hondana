@@ -48,11 +48,14 @@ import java.util.ArrayList;
 
 public class BookShelfFragment extends Fragment implements OnClickListener {
     private Activity mActivity;
+    private int mShelfStyle;
+    private int mNumsPerRow;
     private Book mBook;
     private ArrayList<Book> mBookList;
     private ArrayList<Book> mSelectedBookList;
     private ShelfRowInfo mRowInfo;
     private ArrayList<ShelfRow> mRowList;
+    private ShelfRowAdapter mShelfRowAdapter;
 
     private View view;
     private ListView mListView;
@@ -63,15 +66,38 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
     private int mPosition;
 
     private WindowManager mWindowManager;
+    /** 画面中数据来源： 全部 / 选中 */
     private int mShowFlag;
+    /** 当前是否为编辑画面 */
+    private boolean mIsEdit;
     private static final int FROM_ALL = 0;
     private static final int FROM_SELECTED = 1;
+
+    public static BookShelfFragment newInstance(int shelfStyle) {
+        BookShelfFragment bookShelfFragment = new BookShelfFragment();
+        Bundle data = new Bundle();
+        data.putInt(Const.SHELF_STYLE, shelfStyle);
+        bookShelfFragment.setArguments(data);
+        return bookShelfFragment;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mActivity = mActivity;
+        mActivity = getActivity();
+        mShelfStyle = getArguments().getInt(Const.SHELF_STYLE);
+        // 判断书架的显示形式： 书架形式 / 列表形式
+        switch (mShelfStyle) {
+        // 要修改，将改成根据屏幕宽度来判断一行放多少个cell，暂时定为4个
+            case Const.GRID:
+                mNumsPerRow = 4;
+                break;
+            case Const.LIST:
+                mNumsPerRow = 1;
+                break;
+        }
         mBook = new Book();
+        // 若有选中的话，则画面切换成选中
         mSelectedBookList = Book.getSelectedList();
         if (mSelectedBookList != null) {
             mBookList = mSelectedBookList;
@@ -80,7 +106,7 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
             mBookList = mBook.getAllBooks(mActivity);
             mShowFlag = FROM_ALL;
         }
-        mRowInfo = new ShelfRowInfo(mBookList, 4);
+        mRowInfo = new ShelfRowInfo(mBookList, mNumsPerRow);
         mRowList = mRowInfo.getRowList();
     }
 
@@ -100,16 +126,15 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
                 mListView, false);
         mListView.addFooterView(mBookshelfFooterView);
         mListView.addHeaderView(mBookshelfHeaderView);
-        mListView.setAdapter(new ShelfRowAdapter(mActivity, mRowList, this));
-
+        mShelfRowAdapter = new ShelfRowAdapter(mActivity, mRowList, this);
+        mListView.setAdapter(mShelfRowAdapter);
         // 移动监听
         /*
          * mGridView.setOnTouchListener(new OnTouchListener() {
          * @Override public boolean onTouch(View v, MotionEvent event) { int x =
          * (int) event.getX(); int y = (int) event.getY(); int action =
          * event.getAction(); if (action == MotionEvent.ACTION_MOVE) {
-         * Toast.makeText(mActivity, "当前坐标 X-" + x + " Y-" + y, 1).show();
-         * //
+         * Toast.makeText(mActivity, "当前坐标 X-" + x + " Y-" + y, 1).show(); //
          * mWindowManager.removeView((ImageView)mGridView.getChildAt(mPosition)
          * .findViewById(R.id.bookimage)); } return false; } });
          */
@@ -151,14 +176,14 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
         // 替换当前fragment，显示选中的booklist
         FragmentManager fm = getFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
-        ft.replace(R.id.fragment_container_vertical, new BookShelfFragment());
+        ft.replace(R.id.fragment_container_vertical, BookShelfFragment.newInstance(mShelfStyle));
         ft.commit();
         showSelectedBtn.setVisibility(View.INVISIBLE);
     }
 
     /**
      * 定义全书籍页面在非编辑模式下的点击监听
-     *
+     * 
      * @param row
      * @param column
      * @return
@@ -170,7 +195,8 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
             public void onClick(View v) {
                 Intent intent = new Intent();
                 intent.setClass(mActivity, ShowIntroductionActivity.class);
-                intent.putExtra(Const.BOOK_ONCLICK, row * 4 + column);
+                int position = mShelfStyle == Const.GRID ? row * 4 + column : row;
+                intent.putExtra(Const.BOOK_ONCLICK, position);
                 intent.putExtra(Const.FROM_ALL_OR_SEL, mShowFlag);
                 mActivity.startActivity(intent);
             }
@@ -180,7 +206,7 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
 
     /**
      * 定义全书籍在编辑模式下的点击监听
-     *
+     * 
      * @return
      */
     public OnClickListener onEditClickListener() {
@@ -202,7 +228,7 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
 
     /**
      * 定义全书籍在非编辑模式下的长按监听
-     *
+     * 
      * @return
      */
     public OnLongClickListener onLongClickListener() {
@@ -210,15 +236,39 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
 
             @Override
             public boolean onLongClick(View v) {
-                Button btn = (Button) mActivity.findViewById(R.id.show_selected_btn);
+                final Button btn = (Button) mActivity.findViewById(R.id.show_selected_btn);
                 btn.setVisibility(View.VISIBLE);
                 btn.setOnClickListener(new OnClickListener() {
 
                     @Override
                     public void onClick(View v) {
+                        // 所有checkbox隐藏, 需要删除, 条件中count计算抽出
+                        for (int i = 0; i < mListView.getChildCount(); i++) {
+                            LinearLayout rowView = (LinearLayout) mListView.getChildAt(i);
+                            for (int j = 0; j < rowView.getChildCount(); j++) {
+                                CheckBox cb = (CheckBox) rowView.getChildAt(j).findViewById(
+                                        R.id.checkbox);
+                                if (cb != null) {
+                                    cb.setVisibility(View.INVISIBLE);
+                                }
+                            }
+                        }
+                        btn.setVisibility(View.GONE);
                         showSelected();
                     }
                 });
+
+                // 设置所有checkbox显示，并将cell点击监听改变为checkbox状态更改
+                for (int i = 0; i < mListView.getChildCount(); i++) {
+                    LinearLayout rowView = (LinearLayout) mListView.getChildAt(i);
+                    for (int j = 0; j < rowView.getChildCount(); j++) {
+                        CheckBox cb = (CheckBox) rowView.getChildAt(j).findViewById(R.id.checkbox);
+                        if (cb != null) {
+                            cb.setVisibility(View.VISIBLE);
+                            rowView.getChildAt(j).setOnClickListener(onEditClickListener());
+                        }
+                    }
+                }
                 return false;
             }
         };
@@ -228,13 +278,14 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
 
     /**
      * 定义书籍上checkbox选中状态更改的监听
-     *
+     * 
      * @param row 书籍所在行
      * @param column 书籍所在列
      * @param bookImageView 书籍的图像view
      * @return
      */
-    public OnCheckedChangeListener onCheckedChangeListener(final int row, final int column, final ImageView bookImageView) {
+    public OnCheckedChangeListener onCheckedChangeListener(final int row, final int column,
+            final ImageView bookImageView) {
 
         OnCheckedChangeListener listener = new OnCheckedChangeListener() {
 
@@ -242,17 +293,26 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
             public void onCheckedChanged(CompoundButton checkBox, boolean isChecked) {
                 Book book = mRowList.get(row).getBookListInRow().get(column);
                 if (isChecked) {
-                    checkBox.setChecked(true);
                     bookImageView.setBackgroundResource(R.drawable.border_pressed);
-                    book.setBookSelected(true);
                 } else {
-                    checkBox.setChecked(false);
                     bookImageView.setBackgroundResource(R.drawable.border_no);
-                    book.setBookSelected(false);
                 }
+                book.setBookSelected(isChecked);
+                checkBox.setChecked(isChecked);
             }
         };
 
         return listener;
     }
+
+    public int getShelfStyle() {
+        return mShelfStyle;
+    }
+
+    // 长点击cell之后，画面进入编辑模式 (checkbox可见， cell点击改变checkbox状态)， 设定监听
+    public void ChangeToEditModeLayout() {
+        mIsEdit = true;
+        mListView.invalidateViews();
+    }
+
 }

@@ -9,4 +9,10 @@
         android:id="@+id/menu_show_selected"
         android:icon="@android:drawable/ic_menu_gallery"
         android:showAsAction="always" />
+
+    <item
+        android:id="@+id/menu_change_shelf_style"
+        android:icon="@android:drawable/ic_menu_view"
+        android:showAsAction="always" />
+
 </menu>
