@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -15,7 +14,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
-import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -23,9 +23,11 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Toast;
 import com.example.hondana.Const;
 import com.example.hondana.R;
 import com.example.hondana.activity.ShowIntroductionActivity;
+import com.example.hondana.adapter.NaviDrawerListAdapter;
 import com.example.hondana.adapter.ShelfRow;
 import com.example.hondana.adapter.ShelfRowAdapter;
 import com.example.hondana.adapter.ShelfRowInfo;
@@ -44,14 +46,15 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
     private ShelfRowAdapter mShelfRowAdapter;
 
     private View view;
+    /** shelf */
     private ListView mListView;
     private LinearLayout mBookshelfHeaderView;
     private LinearLayout mBookshelfFooterView;
     private Button showSelectedBtn;
 
-    private int mPosition;
+    /** navi_drawer */
 
-    private WindowManager mWindowManager;
+    private ListView mNaviListView;
     /** 画面中数据来源： 全部 / 选中 */
     private int mShowFlag;
     /** 当前是否为编辑画面 */
@@ -101,7 +104,8 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
         view = inflater.inflate(R.layout.fragment, container, false);
         mListView = (ListView) view.findViewById(R.id.shelf_listview_v);
         showSelectedBtn = (Button) view.findViewById(R.id.test_show_selected_btn);
-        mWindowManager = (WindowManager) mActivity.getSystemService(Context.WINDOW_SERVICE);
+        // mWindowManager = (WindowManager)
+        // mActivity.getSystemService(Context.WINDOW_SERVICE);
 
         // 显示选中按钮监听器设定
         showSelectedBtn.setOnClickListener(this);
@@ -124,6 +128,22 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
          * mWindowManager.removeView((ImageView)mGridView.getChildAt(mPosition)
          * .findViewById(R.id.bookimage)); } return false; } });
          */
+
+        // navigation drawer部分
+        mNaviListView = (ListView) view.findViewById(R.id.navi_drawer_listview);
+        mNaviListView.setAdapter(new NaviDrawerListAdapter(mActivity));
+        mNaviListView.setOnItemClickListener(new OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View view, int position, long arg3) {
+                // 切换书架视图
+                switch (position) {
+                    case 0:
+                        changeShelfStyle();
+                        break;
+                }
+            }
+        });
 
         return view;
     }
@@ -280,6 +300,15 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
         Button showSelBtn = (Button) mListView.findViewById(R.id.show_selected_btn);
         showSelBtn.setVisibility(View.GONE);
         mListView.invalidateViews();
+    }
+
+    private void changeShelfStyle() {
+        mShelfStyle = mShelfStyle == Const.GRID ? Const.LIST : Const.GRID;
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.fragment_container_vertical,
+                BookShelfFragment.newInstance(mShelfStyle));
+        fragmentTransaction.commit();
     }
 
 }

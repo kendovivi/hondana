@@ -1,31 +1,19 @@
 
 package com.example.hondana.activity;
 
-import android.os.Handler;
-
-import android.widget.Toast;
-
-import android.content.DialogInterface.OnClickListener;
-
-import android.content.DialogInterface;
-
-import android.content.DialogInterface;
-
-import android.app.AlertDialog;
-
-import android.view.KeyEvent;
-
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.GridView;
+import android.widget.Toast;
 import com.example.hondana.Const;
 import com.example.hondana.R;
 import com.example.hondana.book.Book;
@@ -44,8 +32,8 @@ public class FirstActivity extends Activity {
     private Button mShowSelBtn;
     private boolean mFinishFlag;
 
-    private FragmentManager fragmentManager;
-    private FragmentTransaction fragmentTransaction;
+    private FragmentManager mFragmentManager;
+    private FragmentTransaction mFragmentTransaction;
     private BookShelfFragment mBookShelfFragment;
 
     @Override
@@ -56,23 +44,23 @@ public class FirstActivity extends Activity {
         Intent intent = getIntent();
         mShelfStyle = intent.getIntExtra(Const.SHELF_STYLE, Const.GRID);
         initBooks();
-        fragmentManager = getFragmentManager();
-        fragmentTransaction = fragmentManager.beginTransaction();
+        mFragmentManager = getFragmentManager();
+        mFragmentTransaction = mFragmentManager.beginTransaction();
         mBookShelfFragment = BookShelfFragment.newInstance(mShelfStyle);
         // 纵向
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             setContentView(R.layout.hondana_main_vertical);
-            fragmentTransaction.add(R.id.fragment_container_vertical, mBookShelfFragment);
+            mFragmentTransaction.add(R.id.fragment_container_vertical, mBookShelfFragment);
             // 横向
         } else {
             setContentView(R.layout.hondana_main_horizontal);
             mGridView = (GridView) this.findViewById(R.id.shelf_gridview_h);
             // mGridView.setAdapter(new BookShelfRowAdapter(this, mAllBooks));
         }
-        fragmentTransaction.commit();
+        mFragmentTransaction.commit();
         mShowSelBtn = (Button) this.findViewById(R.id.test_show_selected_btn);
 
-        //
+        // 结束程序标识
         mFinishFlag = false;
     }
 
@@ -94,27 +82,15 @@ public class FirstActivity extends Activity {
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        fragmentTransaction = fragmentManager.beginTransaction();
+        mFragmentTransaction = mFragmentManager.beginTransaction();
         switch (item.getItemId()) {
         // 重置为grid
             case R.id.menu_edit:
                 Book.setSelectedList(null);
                 mShelfStyle = Const.GRID;
                 mBookShelfFragment = BookShelfFragment.newInstance(mShelfStyle);
-                fragmentTransaction.replace(R.id.fragment_container_vertical, mBookShelfFragment);
-                fragmentTransaction.commit();
-                break;
-            // grid, list视图切换
-            case R.id.menu_change_shelf_style:
-                int shelfStyle = mBookShelfFragment.getShelfStyle();
-                if (shelfStyle == Const.GRID) {
-                    shelfStyle = Const.LIST;
-                } else {
-                    shelfStyle = Const.GRID;
-                }
-                mBookShelfFragment = BookShelfFragment.newInstance(shelfStyle);
-                fragmentTransaction.replace(R.id.fragment_container_vertical, mBookShelfFragment);
-                fragmentTransaction.commit();
+                mFragmentTransaction.replace(R.id.fragment_container_vertical, mBookShelfFragment);
+                mFragmentTransaction.commit();
                 break;
         }
         return super.onOptionsItemSelected(item);
