@@ -103,11 +103,12 @@ public class ShelfRowAdapter extends BaseAdapter {
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mListView = (ListView) mActivity.findViewById(R.id.shelf_listview_v);
         mCurrentRow = (ShelfRow) getItem(row);
+        int cellsInRow = mCurrentRow.getBookListInRow().size();
         // 没被回收的话，就直接使用之前的。若被回收，则创建新的，并添加一些新属性
         if (convertView == null) {
             mRowView = (LinearLayout) inflater.inflate(R.layout.bookshelf_row, null);
 
-            for (int i = 0; i < mCurrentRow.getBookListInRow().size(); i++) {
+            for (int i = 0; i < cellsInRow; i++) {
                 mItemView = (RelativeLayout) inflater.inflate(R.layout.book_list_item, mRowView,
                         false);
                 viewHolder = new ViewHolder();
@@ -132,11 +133,13 @@ public class ShelfRowAdapter extends BaseAdapter {
 
             mRowView = (LinearLayout) convertView;
             viewHolder = (ViewHolder) mRowView.getTag();
-            viewHolder.bookImageView.setImageBitmap(mCurrentRow.getBookListInRow().get(0)
-                    .getBookImage());
+            for (int i = 0; i < cellsInRow; i++) {
+                viewHolder.bookImageView.setImageBitmap(mCurrentRow.getBookListInRow().get(i)
+                        .getBookImage());
+            }
         }
 
-        // 各个item的监听, 要修改，是否需要放到fragment
+        // 各个item的监听, 要整理
         for (int i = 0; i < mRowView.getChildCount(); i++) {
             final int column = i;
             final RelativeLayout bookView = (RelativeLayout) mRowView.getChildAt(i);
@@ -146,6 +149,15 @@ public class ShelfRowAdapter extends BaseAdapter {
             viewHolder.bookCheckBox.setOnCheckedChangeListener(mBookShelfFragment
                     .onCheckedChangeListener(row, column, viewHolder.bookImageView));
 
+            // 根据模式，判断checkbox是否显示
+            if (mBookShelfFragment.getIsEdit()) {
+                viewHolder.bookCheckBox.setVisibility(View.VISIBLE);
+                bookView.setOnClickListener(mBookShelfFragment.onEditClickListener());
+            } else {
+                viewHolder.bookCheckBox.setVisibility(View.INVISIBLE);
+                bookView.setOnClickListener(mBookShelfFragment.onNoEditClickListener(row, column));
+            }
+
             // 删除预定
             // ImageView bookImage = (ImageView)
             // bookView.findViewById(R.id.bookimage);
@@ -153,7 +165,8 @@ public class ShelfRowAdapter extends BaseAdapter {
             // bookView.findViewById(R.id.checkbox);
             // checkBox.setOnCheckedChangeListener(mBookShelfFragment.onCheckedChangeListener(row,
             // column, bookImage));
-            bookView.setOnClickListener(mBookShelfFragment.onNoEditClickListener(row, column));
+            // bookView.setOnClickListener(mBookShelfFragment.onNoEditClickListener(row,
+            // column));
             bookView.setOnLongClickListener(mBookShelfFragment.onLongClickListener());
 
             // 如果是书架是LIST显示模式， 则显示出右边详细信息

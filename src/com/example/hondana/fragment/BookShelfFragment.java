@@ -2,23 +2,6 @@
 package com.example.hondana.fragment;
 
 import android.app.Activity;
-
-import android.view.View.OnLongClickListener;
-
-import com.example.hondana.adapter.ShelfRow;
-
-import android.widget.CompoundButton;
-
-import android.widget.CompoundButton;
-
-import android.widget.CompoundButton.OnCheckedChangeListener;
-
-import android.widget.LinearLayout;
-
-import android.widget.ListView;
-
-import com.example.hondana.adapter.ShelfRowInfo;
-
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -30,19 +13,22 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.GridView;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import com.example.hondana.Const;
 import com.example.hondana.R;
 import com.example.hondana.activity.ShowIntroductionActivity;
+import com.example.hondana.adapter.ShelfRow;
 import com.example.hondana.adapter.ShelfRowAdapter;
+import com.example.hondana.adapter.ShelfRowInfo;
 import com.example.hondana.book.Book;
 import java.util.ArrayList;
 
@@ -155,11 +141,8 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.test_show_selected_btn:
-                showSelected();
-                break;
             case R.id.show_selected_btn:
-
+                showSelected();
                 break;
         }
     }
@@ -236,44 +219,11 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
 
             @Override
             public boolean onLongClick(View v) {
-                final Button btn = (Button) mActivity.findViewById(R.id.show_selected_btn);
-                btn.setVisibility(View.VISIBLE);
-                btn.setOnClickListener(new OnClickListener() {
-
-                    @Override
-                    public void onClick(View v) {
-                        // 所有checkbox隐藏, 需要删除, 条件中count计算抽出
-                        for (int i = 0; i < mListView.getChildCount(); i++) {
-                            LinearLayout rowView = (LinearLayout) mListView.getChildAt(i);
-                            for (int j = 0; j < rowView.getChildCount(); j++) {
-                                CheckBox cb = (CheckBox) rowView.getChildAt(j).findViewById(
-                                        R.id.checkbox);
-                                if (cb != null) {
-                                    cb.setVisibility(View.INVISIBLE);
-                                }
-                            }
-                        }
-                        btn.setVisibility(View.GONE);
-                        showSelected();
-                    }
-                });
-
-                // 设置所有checkbox显示，并将cell点击监听改变为checkbox状态更改
-                for (int i = 0; i < mListView.getChildCount(); i++) {
-                    LinearLayout rowView = (LinearLayout) mListView.getChildAt(i);
-                    for (int j = 0; j < rowView.getChildCount(); j++) {
-                        CheckBox cb = (CheckBox) rowView.getChildAt(j).findViewById(R.id.checkbox);
-                        if (cb != null) {
-                            cb.setVisibility(View.VISIBLE);
-                            rowView.getChildAt(j).setOnClickListener(onEditClickListener());
-                        }
-                    }
-                }
+                ChangeToEditModeLayout();
                 return false;
             }
         };
         return listener;
-
     }
 
     /**
@@ -309,9 +259,18 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
         return mShelfStyle;
     }
 
+    public boolean getIsEdit() {
+        return mIsEdit;
+    }
+
     // 长点击cell之后，画面进入编辑模式 (checkbox可见， cell点击改变checkbox状态)， 设定监听
     public void ChangeToEditModeLayout() {
         mIsEdit = true;
+        Button showSelBtn = (Button) mListView.findViewById(R.id.show_selected_btn);
+        showSelBtn.setVisibility(View.VISIBLE);
+        showSelBtn.setOnClickListener(this);
+
+        // 重新调用adapter的getview（）， 描画新编辑画面的listview
         mListView.invalidateViews();
     }
 

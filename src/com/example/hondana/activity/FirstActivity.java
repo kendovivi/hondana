@@ -1,37 +1,21 @@
 
 package com.example.hondana.activity;
 
-import android.view.MenuItem;
-
-import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
-
-import android.view.MenuInflater;
-
-import android.view.Menu;
-
-import android.app.FragmentTransaction;
-
-import com.example.hondana.fragment.BookShelfFragment;
-
-import android.app.FragmentManager;
-
 import android.app.Activity;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AdapterView.OnItemLongClickListener;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.GridView;
-import android.widget.Toast;
 import com.example.hondana.Const;
 import com.example.hondana.R;
-import com.example.hondana.adapter.ShelfRowAdapter;
 import com.example.hondana.book.Book;
+import com.example.hondana.fragment.BookShelfFragment;
 import java.util.ArrayList;
 
 public class FirstActivity extends Activity {
@@ -44,6 +28,7 @@ public class FirstActivity extends Activity {
     private ArrayList<Book> mSelBooks;
 
     private Button mShowSelBtn;
+    private boolean finishFlag;
 
     private FragmentManager fragmentManager;
     private FragmentTransaction fragmentTransaction;
@@ -72,6 +57,9 @@ public class FirstActivity extends Activity {
         }
         fragmentTransaction.commit();
         mShowSelBtn = (Button) this.findViewById(R.id.test_show_selected_btn);
+
+        //
+        finishFlag = false;
     }
 
     /*
@@ -87,15 +75,22 @@ public class FirstActivity extends Activity {
         return true;
     }
 
+    /**
+     * menu点击
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        Intent intent = new Intent();
+        fragmentTransaction = fragmentManager.beginTransaction();
         switch (item.getItemId()) {
+            //重置为grid
             case R.id.menu_edit:
                 Book.setSelectedList(null);
-                intent.setClass(this, FirstActivity.class);
-                this.startActivity(intent);
+                mShelfStyle = Const.GRID;
+                mBookShelfFragment = BookShelfFragment.newInstance(mShelfStyle);
+                fragmentTransaction.replace(R.id.fragment_container_vertical, mBookShelfFragment);
+                fragmentTransaction.commit();
                 break;
+            //grid, list视图切换
             case R.id.menu_change_shelf_style:
                 int shelfStyle = mBookShelfFragment.getShelfStyle();
                 if (shelfStyle == Const.GRID) {
@@ -103,13 +98,9 @@ public class FirstActivity extends Activity {
                 } else {
                     shelfStyle = Const.GRID;
                 }
-                fragmentTransaction = fragmentManager.beginTransaction();
                 mBookShelfFragment = BookShelfFragment.newInstance(shelfStyle);
                 fragmentTransaction.replace(R.id.fragment_container_vertical, mBookShelfFragment);
                 fragmentTransaction.commit();
-                // intent.setClass(this, FirstActivity.class);
-                // intent.putExtra(Const.SHELF_STYLE, shelfStyle);
-                // this.startActivity(intent);
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -119,5 +110,4 @@ public class FirstActivity extends Activity {
         Book.setSelectedList(null);
         mAllBooks = mBook.getAllBooks(this);
     }
-
 }
