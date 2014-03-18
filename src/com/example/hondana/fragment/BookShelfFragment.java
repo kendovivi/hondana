@@ -220,6 +220,7 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
             @Override
             public boolean onLongClick(View v) {
                 ChangeToEditModeLayout();
+
                 return false;
             }
         };
@@ -271,6 +272,13 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
         showSelBtn.setOnClickListener(this);
 
         // 重新调用adapter的getview（）， 描画新编辑画面的listview
+        mListView.invalidateViews();
+    }
+
+    public void ChangeToNormalModeLayout() {
+        mIsEdit = false;
+        Button showSelBtn = (Button) mListView.findViewById(R.id.show_selected_btn);
+        showSelBtn.setVisibility(View.GONE);
         mListView.invalidateViews();
     }
 

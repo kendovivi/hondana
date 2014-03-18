@@ -1,6 +1,10 @@
 
 package com.example.hondana.activity;
 
+import android.os.Handler;
+
+import android.widget.Toast;
+
 import android.content.DialogInterface.OnClickListener;
 
 import android.content.DialogInterface;
@@ -38,7 +42,7 @@ public class FirstActivity extends Activity {
     private ArrayList<Book> mSelBooks;
 
     private Button mShowSelBtn;
-    private boolean finishFlag;
+    private boolean mFinishFlag;
 
     private FragmentManager fragmentManager;
     private FragmentTransaction fragmentTransaction;
@@ -69,7 +73,7 @@ public class FirstActivity extends Activity {
         mShowSelBtn = (Button) this.findViewById(R.id.test_show_selected_btn);
 
         //
-        finishFlag = false;
+        mFinishFlag = false;
     }
 
     /*
@@ -121,32 +125,43 @@ public class FirstActivity extends Activity {
         mAllBooks = mBook.getAllBooks(this);
     }
 
+    /*
+     * @Override public boolean dispatchKeyEvent(KeyEvent event) { if
+     * (event.getAction() == KeyEvent.ACTION_DOWN) { if (event.getKeyCode() ==
+     * KeyEvent.KEYCODE_BACK) { AlertDialog.Builder alertDialogBuilder = new
+     * AlertDialog.Builder(this);
+     * alertDialogBuilder.setIcon(R.drawable.ic_launcher);
+     * alertDialogBuilder.setTitle("提示");
+     * alertDialogBuilder.setMessage("アプリを終了しますか？");
+     * alertDialogBuilder.setPositiveButton("終了", new OnClickListener() {
+     * @Override public void onClick(DialogInterface dialog, int which) {
+     * finish(); } }); alertDialogBuilder.setNegativeButton("キャンセル", new
+     * OnClickListener() {
+     * @Override public void onClick(DialogInterface dialog, int which) { //
+     * 什么都不做 } }); AlertDialog dialog = alertDialogBuilder.create();
+     * dialog.show(); } } return super.dispatchKeyEvent(event); }
+     */
+
     @Override
-    public boolean dispatchKeyEvent(KeyEvent event) {
-        if (event.getAction() == KeyEvent.ACTION_DOWN) {
-            if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
-                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-                alertDialogBuilder.setIcon(R.drawable.ic_launcher);
-                alertDialogBuilder.setTitle("提示");
-                alertDialogBuilder.setMessage("アプリを終了しますか？");
-                alertDialogBuilder.setPositiveButton("終了", new OnClickListener() {
+    public void onBackPressed() {
+        // 名字getisedit要修改
+        if (mBookShelfFragment.getIsEdit()) {
+            mBookShelfFragment.ChangeToNormalModeLayout();
+        } else {
+            if (mFinishFlag == true) {
+                super.onBackPressed();
+            } else {
+                mFinishFlag = true;
+                Toast.makeText(this, "もう一度押すとアプリが終了します", 2).show();
+                new Handler().postDelayed(new Runnable() {
 
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        finish();
+                    public void run() {
+                        mFinishFlag = false;
                     }
-                });
-                alertDialogBuilder.setNegativeButton("キャンセル", new OnClickListener() {
 
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // 什么都不做
-                    }
-                });
-                AlertDialog dialog = alertDialogBuilder.create();
-                dialog.show();
+                }, 3000);
             }
         }
-        return super.dispatchKeyEvent(event);
     }
 }

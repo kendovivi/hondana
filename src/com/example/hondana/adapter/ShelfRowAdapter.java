@@ -126,11 +126,9 @@ public class ShelfRowAdapter extends BaseAdapter {
             }
             mRowView.setPadding(10, 5, 15, 47);
 
-            // ?
+            // settag部分要再查资料
             mRowView.setTag(viewHolder);
         } else {
-            // ?
-
             mRowView = (LinearLayout) convertView;
             viewHolder = (ViewHolder) mRowView.getTag();
             for (int i = 0; i < cellsInRow; i++) {
@@ -148,7 +146,6 @@ public class ShelfRowAdapter extends BaseAdapter {
             viewHolder.bookCheckBox = (CheckBox) bookView.findViewById(R.id.checkbox);
             viewHolder.bookCheckBox.setOnCheckedChangeListener(mBookShelfFragment
                     .onCheckedChangeListener(row, column, viewHolder.bookImageView));
-
             // 根据模式，判断checkbox是否显示
             if (mBookShelfFragment.getIsEdit()) {
                 viewHolder.bookCheckBox.setVisibility(View.VISIBLE);
