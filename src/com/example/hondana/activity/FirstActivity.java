@@ -1,6 +1,16 @@
 
 package com.example.hondana.activity;
 
+import android.content.DialogInterface.OnClickListener;
+
+import android.content.DialogInterface;
+
+import android.content.DialogInterface;
+
+import android.app.AlertDialog;
+
+import android.view.KeyEvent;
+
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -82,7 +92,7 @@ public class FirstActivity extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
         fragmentTransaction = fragmentManager.beginTransaction();
         switch (item.getItemId()) {
-            //重置为grid
+        // 重置为grid
             case R.id.menu_edit:
                 Book.setSelectedList(null);
                 mShelfStyle = Const.GRID;
@@ -90,7 +100,7 @@ public class FirstActivity extends Activity {
                 fragmentTransaction.replace(R.id.fragment_container_vertical, mBookShelfFragment);
                 fragmentTransaction.commit();
                 break;
-            //grid, list视图切换
+            // grid, list视图切换
             case R.id.menu_change_shelf_style:
                 int shelfStyle = mBookShelfFragment.getShelfStyle();
                 if (shelfStyle == Const.GRID) {
@@ -109,5 +119,34 @@ public class FirstActivity extends Activity {
     private void initBooks() {
         Book.setSelectedList(null);
         mAllBooks = mBook.getAllBooks(this);
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        if (event.getAction() == KeyEvent.ACTION_DOWN) {
+            if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+                alertDialogBuilder.setIcon(R.drawable.ic_launcher);
+                alertDialogBuilder.setTitle("提示");
+                alertDialogBuilder.setMessage("アプリを終了しますか？");
+                alertDialogBuilder.setPositiveButton("終了", new OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish();
+                    }
+                });
+                alertDialogBuilder.setNegativeButton("キャンセル", new OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // 什么都不做
+                    }
+                });
+                AlertDialog dialog = alertDialogBuilder.create();
+                dialog.show();
+            }
+        }
+        return super.dispatchKeyEvent(event);
     }
 }
