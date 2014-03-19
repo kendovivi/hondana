@@ -4,6 +4,9 @@
     <string name="app_name">Hondana</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
-
     <string name="show_selected_books_btn_text">show selected</string>
+
+    <!-- action_bar menu_item -->
+    <string name="menu_refresh">ホーム</string>
+
 </resources>

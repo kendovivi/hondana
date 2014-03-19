@@ -1,6 +1,12 @@
 
 package com.example.hondana.fragment;
 
+import android.preference.PreferenceActivity;
+
+import android.graphics.Point;
+
+import android.view.Display;
+
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -79,7 +85,13 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
         switch (mShelfStyle) {
         // 要修改，将改成根据屏幕宽度来判断一行放多少个cell，暂时定为4个
             case Const.GRID:
-                mNumsPerRow = 4;
+                // mNumsPerRow = 4;
+                // 计算屏幕宽度，判断一行显示多少本书
+                Display display = mActivity.getWindowManager().getDefaultDisplay();
+                Point size = new Point();
+                display.getSize(size);
+                int width = size.x;
+                mNumsPerRow = width / Const.CONTENT_WIDTH;
                 break;
             case Const.LIST:
                 mNumsPerRow = 1;
@@ -138,8 +150,12 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
             public void onItemClick(AdapterView<?> arg0, View view, int position, long arg3) {
                 // 切换书架视图
                 switch (position) {
+                // 书架视图切换按钮
                     case 0:
                         changeShelfStyle();
+                        break;
+                    // 进入设定画面
+                    case 4:
                         break;
                 }
             }
@@ -148,10 +164,11 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
         return view;
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-    }
+    // @Override
+    // public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    // inflater.inflate(R.menu.hondana_menu, menu);
+    // super.onCreateOptionsMenu(menu, inflater);
+    // }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {

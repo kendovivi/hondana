@@ -2,8 +2,12 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@drawable/bookshelf_header" >
+    android:background="@drawable/bookshelf"
+    android:orientation="vertical" >
 
+    <ImageView
+        android:layout_width="80dip"
+        android:layout_height="80dip"
+        android:background="@drawable/ic_launcher" />
 
 </LinearLayout>

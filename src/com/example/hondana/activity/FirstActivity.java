@@ -1,6 +1,8 @@
 
 package com.example.hondana.activity;
 
+import android.app.ActionBar;
+
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -39,10 +41,20 @@ public class FirstActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // actionbar调查
+        // ActionBar actionBar = getActionBar();
+        // actionBar.setDisplayShowHomeEnabled(false);
+        // actionBar.setDisplayShowTitleEnabled(false);
+
         mBook = new Book();
-        // 初次默认为书架
-        Intent intent = getIntent();
-        mShelfStyle = intent.getIntExtra(Const.SHELF_STYLE, Const.GRID);
+        // 初次默认为书架, 要修改
+        if (savedInstanceState != null) {
+            mShelfStyle = savedInstanceState.getInt(Const.SHELF_STYLE, Const.GRID);
+        } else {
+            mShelfStyle = Const.GRID;
+        }
+        // Intent intent = getIntent();
+        // mShelfStyle = intent.getIntExtra(Const.SHELF_STYLE, Const.GRID);
         initBooks();
         mFragmentManager = getFragmentManager();
         mFragmentTransaction = mFragmentManager.beginTransaction();
@@ -53,9 +65,8 @@ public class FirstActivity extends Activity {
             mFragmentTransaction.add(R.id.fragment_container_vertical, mBookShelfFragment);
             // 横向
         } else {
-            setContentView(R.layout.hondana_main_horizontal);
-            mGridView = (GridView) this.findViewById(R.id.shelf_gridview_h);
-            // mGridView.setAdapter(new BookShelfRowAdapter(this, mAllBooks));
+            setContentView(R.layout.hondana_main_vertical);
+            mFragmentTransaction.replace(R.id.fragment_container_vertical, mBookShelfFragment);
         }
         mFragmentTransaction.commit();
         mShowSelBtn = (Button) this.findViewById(R.id.test_show_selected_btn);
@@ -75,6 +86,12 @@ public class FirstActivity extends Activity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.hondana_menu, menu);
         return true;
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putInt(Const.SHELF_STYLE, mBookShelfFragment.getShelfStyle());
+        super.onSaveInstanceState(outState);
     }
 
     /**

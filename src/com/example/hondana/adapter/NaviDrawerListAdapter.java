@@ -55,7 +55,13 @@ public class NaviDrawerListAdapter extends BaseAdapter {
         } else {
             viewHolder = (ViewHolder) view.getTag();
         }
-        viewHolder.drawerIcon.setImageResource(android.R.drawable.btn_star);
+        switch (position) {
+            case 4:
+                viewHolder.drawerIcon.setImageResource(R.drawable.navi_drawer_setting_selector);
+                break;
+            default:
+                viewHolder.drawerIcon.setImageResource(R.drawable.navi_drawer_shelf_style_selector);
+        }
         return view;
     }
 

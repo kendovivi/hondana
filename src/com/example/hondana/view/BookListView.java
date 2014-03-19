@@ -31,7 +31,7 @@ public class BookListView extends ListView {
     public BookListView(Context context, AttributeSet attrs) {
         super(context, attrs);
         mShelfBackground = BitmapFactory.decodeResource(getResources(),
-                R.drawable.new_shelf_background);
+                R.drawable.bookshelf);
         mShelfFooterBackground = BitmapFactory.decodeResource(getResources(),
                 R.drawable.bookshelf_footer);
         mShelfHeaderBackground = BitmapFactory.decodeResource(getResources(),
@@ -47,8 +47,9 @@ public class BookListView extends ListView {
         // mIsBottom = BookShelfRowAdapter.getIsGridViewBottom();
         // mIsHeader = BookShelfRowAdapter.getIsGridViewHeader();
         // 获取
-        int rowCount = getChildCount() / mNumOfColumns;
-        int top = rowCount > 0 ? getChildAt(0).getTop() : 0;
+//        int rowCount = getChildCount() / mNumOfColumns;
+//        int top = rowCount > 0 ? getChildAt(0).getTop() : 0;
+        int top = getChildAt(0).getTop();
         int backgroundImgHeight = mShelfBackground.getHeight();
         int backgroundImgWidth = mShelfBackground.getWidth();
         int mScreenHeight = getHeight();
