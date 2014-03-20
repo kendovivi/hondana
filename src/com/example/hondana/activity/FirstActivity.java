@@ -1,6 +1,12 @@
 
 package com.example.hondana.activity;
 
+import android.content.SharedPreferences.Editor;
+
+import android.content.SharedPreferences;
+
+import android.preference.PreferenceManager;
+
 import android.app.ActionBar;
 
 import android.app.Activity;
@@ -38,6 +44,8 @@ public class FirstActivity extends Activity {
     private FragmentTransaction mFragmentTransaction;
     private BookShelfFragment mBookShelfFragment;
 
+    SharedPreferences mSp;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,12 +54,22 @@ public class FirstActivity extends Activity {
         // actionBar.setDisplayShowHomeEnabled(false);
         // actionBar.setDisplayShowTitleEnabled(false);
 
+        // get preference
+        mSp = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean saveStylePref = mSp.getBoolean("pref_shelf_style", false);
+        int shelfStylePref = mSp.getInt(Const.SHELF_STYLE, -1);
         mBook = new Book();
         // 初次默认为书架, 要修改
         if (savedInstanceState != null) {
             mShelfStyle = savedInstanceState.getInt(Const.SHELF_STYLE, Const.GRID);
         } else {
-            mShelfStyle = Const.GRID;
+            // 第一次进入，读取设定值，若为真则使用列表显示
+            // 若pref中每次退出时记录当时style为真
+            if (saveStylePref && shelfStylePref != -1) {
+                mShelfStyle = shelfStylePref;
+            } else {
+                mShelfStyle = Const.GRID;
+            }
         }
         // Intent intent = getIntent();
         // mShelfStyle = intent.getIntExtra(Const.SHELF_STYLE, Const.GRID);
@@ -142,6 +160,7 @@ public class FirstActivity extends Activity {
             mBookShelfFragment.ChangeToNormalModeLayout();
         } else {
             if (mFinishFlag == true) {
+                saveShelfStyleToPref();
                 super.onBackPressed();
             } else {
                 mFinishFlag = true;
@@ -156,5 +175,11 @@ public class FirstActivity extends Activity {
                 }, 3000);
             }
         }
+    }
+
+    private void saveShelfStyleToPref() {
+        Editor editor = mSp.edit();
+        editor.putInt(Const.SHELF_STYLE, mBookShelfFragment.getShelfStyle());
+        editor.commit();
     }
 }

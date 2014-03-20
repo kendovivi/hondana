@@ -1,6 +1,22 @@
 
 package com.example.hondana.fragment;
 
+import android.widget.RelativeLayout;
+
+import android.graphics.Color;
+
+import android.view.DragEvent;
+
+import android.view.View.OnDragListener;
+
+import android.view.View.DragShadowBuilder;
+
+import android.content.ClipDescription;
+
+import android.content.ClipData;
+
+import com.example.hondana.activity.SettingActivity;
+
 import android.preference.PreferenceActivity;
 
 import android.graphics.Point;
@@ -156,6 +172,9 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
                         break;
                     // 进入设定画面
                     case 4:
+                        Intent intent = new Intent();
+                        intent.setClass(mActivity, SettingActivity.class);
+                        mActivity.startActivity(intent);
                         break;
                 }
             }
@@ -258,6 +277,14 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
             public boolean onLongClick(View v) {
                 ChangeToEditModeLayout();
 
+                // drag start
+                ClipData.Item item = new ClipData.Item("icondrag");
+                ClipData dragData = new ClipData("icondrag", new String[] {
+                    ClipDescription.MIMETYPE_TEXT_PLAIN
+                }, item);
+                View.DragShadowBuilder shadow = new DragShadowBuilder(v);
+                v.startDrag(dragData, shadow, null, 0);
+                v.setOnDragListener(onDragListener);
                 return false;
             }
         };
@@ -327,5 +354,50 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
                 BookShelfFragment.newInstance(mShelfStyle));
         fragmentTransaction.commit();
     }
+
+    public OnDragListener onDragListener = new OnDragListener() {
+        @Override
+        public boolean onDrag(View v, DragEvent event) {
+
+            final int action = event.getAction();
+            RelativeLayout view = (RelativeLayout) v;
+            switch (action) {
+                case DragEvent.ACTION_DRAG_STARTED:
+                    if (event.getClipDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)) {
+                        //view.setColorFilter(Color.BLUE);
+                        view.setVisibility(View.INVISIBLE);
+                        view.invalidate();
+                        return(true);
+                    } else {
+                        return(false);
+                    }
+                case DragEvent.ACTION_DRAG_ENTERED:
+                    //view.setColorFilter(Color.GREEN);
+                    view.invalidate();
+                    return (true);
+                case DragEvent.ACTION_DRAG_LOCATION:
+                    break;
+                case DragEvent.ACTION_DRAG_EXITED:
+                    //view.setColorFilter(Color.BLUE);
+                    view.invalidate();
+                    break;
+                case DragEvent.ACTION_DROP:
+                    ClipData.Item item = event.getClipData().getItemAt(0);
+                    Toast.makeText(mActivity, item.getText(), 1).show();
+                    view.setVisibility(View.VISIBLE);
+                    view.invalidate();
+                    return true;
+                case DragEvent.ACTION_DRAG_ENDED:
+                    if (event.getResult()) {
+                        Toast.makeText(mActivity, "dropped", 1).show();
+                    } else {
+                        Toast.makeText(mActivity, "drop failed", 1).show();
+                    }
+                    break;
+
+            }
+            return false;
+        }
+    };
 
 }
