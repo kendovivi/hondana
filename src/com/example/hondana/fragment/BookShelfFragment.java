@@ -70,8 +70,8 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
     private View view;
     /** shelf */
     private ListView mListView;
-    private LinearLayout mBookshelfHeaderView;
-    private LinearLayout mBookshelfFooterView;
+    private LinearLayout mBookShelfHeaderView;
+    private LinearLayout mBookShelfFooterView;
     private Button showSelectedBtn;
 
     /** navi_drawer */
@@ -138,12 +138,16 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
         // 显示选中按钮监听器设定
         showSelectedBtn.setOnClickListener(this);
         // gridview 的适配器和监听器的设定
-        mBookshelfFooterView = (LinearLayout) inflater.inflate(R.layout.bookshelf_footer,
+        // 设定ListView头部和底部 要修改
+        mBookShelfFooterView = (LinearLayout) inflater.inflate(R.layout.bookshelf_footer,
                 mListView, false);
-        mBookshelfHeaderView = (LinearLayout) inflater.inflate(R.layout.bookshelf_header,
+        mBookShelfHeaderView = (LinearLayout) inflater.inflate(R.layout.bookshelf_header,
                 mListView, false);
-        mListView.addFooterView(mBookshelfFooterView);
-        mListView.addHeaderView(mBookshelfHeaderView);
+        // 设定tag，在BookListView画背景时，可以判断是否为第一行
+        mBookShelfHeaderView.setTag("ListViewHeader");
+        mListView.addFooterView(mBookShelfFooterView);
+        mListView.addHeaderView(mBookShelfHeaderView);
+        // 设定ListView contents部分
         mShelfRowAdapter = new ShelfRowAdapter(mActivity, mRowList, this);
         mListView.setAdapter(mShelfRowAdapter);
         // 移动监听
@@ -280,7 +284,7 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
                 // drag start
                 ClipData.Item item = new ClipData.Item("icondrag");
                 ClipData dragData = new ClipData("icondrag", new String[] {
-                    ClipDescription.MIMETYPE_TEXT_PLAIN
+                        ClipDescription.MIMETYPE_TEXT_PLAIN
                 }, item);
                 View.DragShadowBuilder shadow = new DragShadowBuilder(v);
                 v.startDrag(dragData, shadow, null, 0);
@@ -364,27 +368,32 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
             switch (action) {
                 case DragEvent.ACTION_DRAG_STARTED:
                     if (event.getClipDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)) {
-                        //view.setColorFilter(Color.BLUE);
-                        view.setVisibility(View.INVISIBLE);
+                        // view.setColorFilter(Color.BLUE);
+
                         view.invalidate();
-                        return(true);
+                        return (true);
                     } else {
-                        return(false);
+                        return (false);
                     }
                 case DragEvent.ACTION_DRAG_ENTERED:
-                    //view.setColorFilter(Color.GREEN);
+                    // view.setColorFilter(Color.GREEN);
                     view.invalidate();
                     return (true);
                 case DragEvent.ACTION_DRAG_LOCATION:
                     break;
                 case DragEvent.ACTION_DRAG_EXITED:
-                    //view.setColorFilter(Color.BLUE);
+                    // view.setColorFilter(Color.BLUE);
                     view.invalidate();
                     break;
                 case DragEvent.ACTION_DROP:
-                    ClipData.Item item = event.getClipData().getItemAt(0);
-                    Toast.makeText(mActivity, item.getText(), 1).show();
-                    view.setVisibility(View.VISIBLE);
+                    // linearLayout 要修改
+                    View droppointview = (View) event.getLocalState();
+
+                    ViewGroup row = (ViewGroup) v.getParent();
+                    int index = row.indexOfChild(droppointview);
+                    row.removeView(v);
+
+                    row.addView(v, 0);
                     view.invalidate();
                     return true;
                 case DragEvent.ACTION_DRAG_ENDED:

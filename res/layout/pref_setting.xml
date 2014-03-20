@@ -13,6 +13,13 @@
             android:key="pref_shelf_style"
             android:summary="アプリ終了する前に本棚スタイルを保存しますか"
             android:title="本棚表示スタイル" />
+
+        <EditTextPreference
+            android:defaultValue="4"
+            android:dialogTitle="個数設定"
+            android:key="pref_shelf_contents_in_row"
+            android:summary="4個"
+            android:title="本棚各行のコンテンツ数" />
     </PreferenceCategory>
 
 </PreferenceScreen>
