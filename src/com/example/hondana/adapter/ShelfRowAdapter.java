@@ -1,6 +1,8 @@
 
 package com.example.hondana.adapter;
 
+import com.example.hondana.async.ImageLoader;
+
 import android.widget.Button;
 
 import com.example.hondana.fragment.BookShelfFragment;
@@ -114,8 +116,9 @@ public class ShelfRowAdapter extends BaseAdapter {
                 viewHolder = new ViewHolder();
                 viewHolder.bookImageView = (ImageView) mItemView.findViewById(R.id.bookimage);
                 viewHolder.bookCheckBox = (CheckBox) mItemView.findViewById(R.id.checkbox);
-                viewHolder.bookImageView.setImageBitmap(mCurrentRow.getBookListInRow().get(i)
-                        .getBookImage());
+                // viewHolder.bookImageView.setImageBitmap(mCurrentRow.getBookListInRow().get(i)
+                // .getBookImage());
+                setImage(viewHolder.bookImageView, mCurrentRow.getBookListInRow().get(i));
 
                 viewHolder.bookTitleView = (TextView) mItemView.findViewById(R.id.book_title);
                 viewHolder.bookAuthorView = (TextView) mItemView.findViewById(R.id.book_author);
@@ -132,8 +135,9 @@ public class ShelfRowAdapter extends BaseAdapter {
             mRowView = (LinearLayout) convertView;
             viewHolder = (ViewHolder) mRowView.getTag();
             for (int i = 0; i < cellsInRow; i++) {
-                viewHolder.bookImageView.setImageBitmap(mCurrentRow.getBookListInRow().get(i)
-                        .getBookImage());
+                // viewHolder.bookImageView.setImageBitmap(mCurrentRow.getBookListInRow().get(i)
+                // .getBookImage());
+                setImage(viewHolder.bookImageView, mCurrentRow.getBookListInRow().get(i));
             }
         }
 
@@ -188,5 +192,10 @@ public class ShelfRowAdapter extends BaseAdapter {
         RelativeLayout bookDetailsLayout;
         TextView bookTitleView;
         TextView bookAuthorView;
+    }
+
+    private void setImage(ImageView imageView, Book book) {
+        ImageLoader loader = new ImageLoader(imageView);
+        loader.execute(book);
     }
 }
