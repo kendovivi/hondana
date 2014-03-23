@@ -195,7 +195,7 @@ public class ShelfRowAdapter extends BaseAdapter {
     }
 
     private void setImage(ImageView imageView, Book book) {
-        ImageLoader loader = new ImageLoader(imageView);
+        ImageLoader loader = new ImageLoader(imageView, mActivity);
         loader.execute(book);
     }
 }
