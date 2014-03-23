@@ -14,7 +14,7 @@ import android.graphics.BitmapFactory;
 import com.example.hondana.R;
 import java.util.ArrayList;
 
-public class Book implements Parcelable{
+public class Book{
     /** 书名 */
     private String mBookName = "bookname";
     /** 书封面图片 */
@@ -36,14 +36,6 @@ public class Book implements Parcelable{
         this.mBookName = bookName;
         this.mBookImage = bookImage;
         this.mBookIsRec = bookIsRec;
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
     }
 
     public String getBookName() {
