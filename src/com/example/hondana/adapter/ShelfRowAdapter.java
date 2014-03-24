@@ -1,6 +1,8 @@
 
 package com.example.hondana.adapter;
 
+import android.widget.ListView;
+
 import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -79,7 +81,7 @@ public class ShelfRowAdapter extends BaseAdapter {
         mRowView = (LinearLayout) convertView;
         LayoutInflater inflater = (LayoutInflater) mContext
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        // mListView = (ListView) mActivity.findViewById(R.id.shelf_listview_v);
+        ListView mListView = (ListView) mActivity.findViewById(R.id.shelf_listview_v);
         mCurrentRow = (ShelfRow) getItem(row);
         // 行にあるコンテンツ数
         mCellsNumInRow = mCurrentRow.getBookListInRow().size();
@@ -136,9 +138,15 @@ public class ShelfRowAdapter extends BaseAdapter {
             // リスト表示の場合、コンテンツ詳細情報とソート機能レイアウトを表示
             if (mShelfStyle == Const.LIST) {
                 viewHolder.bookDetailsLayout.setVisibility(View.VISIBLE);
-                viewHolder.bookTitleView.setText(mCurrentRow.getBookListInRow().get(i).getBookTitle());
-                viewHolder.bookAuthorView.setText(mCurrentRow.getBookListInRow().get(i).getBookAuthor());
+                viewHolder.bookTitleView.setText(mCurrentRow.getBookListInRow().get(i)
+                        .getBookTitle());
+                viewHolder.bookAuthorView.setText(mCurrentRow.getBookListInRow().get(i)
+                        .getBookAuthor());
             }
+        }
+
+        if (mShelfStyle == Const.LIST) {
+            mListView.findViewById(R.id.sort).setVisibility(View.VISIBLE);
         }
         return mRowView;
     }

@@ -89,23 +89,12 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
      * @param sortType　ソート順
      * @return
      */
-    public static BookShelfFragment newInstance(int shelfStyle, int sortType) {
+    public static BookShelfFragment newInstance(int shelfStyle) {
         BookShelfFragment bookShelfFragment = new BookShelfFragment();
         Bundle data = new Bundle();
         data.putInt(Const.SHELF_STYLE, shelfStyle);
-        data.putInt(Const.SORT_TYPE, sortType);
         bookShelfFragment.setArguments(data);
         return bookShelfFragment;
-    }
-
-    /**
-     * 本棚のfragmentをインスタンスする。ソート順を指定しない場合、デフォルトでタイトル順にする
-     * 
-     * @param shelfStyle　本棚表示スタイル
-     * @return
-     */
-    public static BookShelfFragment newInstance(int shelfStyle) {
-        return BookShelfFragment.newInstance(shelfStyle, Const.SORT_BY_CONTENT_TITLE);
     }
 
     @Override
@@ -113,6 +102,12 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
         super.onCreate(savedInstanceState);
         mActivity = getActivity();
         mShelfStyle = getArguments().getInt(Const.SHELF_STYLE);
+        if (savedInstanceState != null && savedInstanceState.containsKey(Const.SORT_TYPE)) {
+            mSortType = savedInstanceState.getInt(Const.SORT_TYPE);
+        } else {
+            // デフォルトでタイトル順で並び
+            mSortType = Const.SORT_BY_CONTENT_TITLE;
+        }
 
         System.out.println("-- shelfstyle --- >>" + mShelfStyle);
         switch (mShelfStyle) {
@@ -135,8 +130,6 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
             mBookList = contentsInfo.getTestContents();
             mShowFlag = FROM_ALL;
         }
-        mSortType = getArguments().getInt(Const.SORT_TYPE);
-        mBookList = ContentsInfo.sortByTitle(mBookList, mSortType);
         // コンテンツ数情報により、行リストを作る
         mRowInfo = new ShelfRowInfo(mBookList, mNumsPerRow);
         mRowList = mRowInfo.getRowList();
@@ -199,34 +192,29 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
 
     @Override
     public void onClick(View v) {
-        FragmentManager fm = getFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction();
         switch (v.getId()) {
             case R.id.show_selected_btn:
                 showSelected();
                 break;
             case R.id.sort_btn_byTitle:
                 if (mSortType == Const.SORT_BY_CONTENT_TITLE) {
-                    Toast.makeText(mActivity, "今の並び順は既にタイトル順です", 1).show();
+                    Toast.makeText(mActivity, "今の並び順は既にタイトル順です", Toast.LENGTH_SHORT).show();
                 } else {
-                    ft.replace(R.id.fragment_container_vertical,
-                            BookShelfFragment.newInstance(mShelfStyle, Const.SORT_BY_CONTENT_TITLE));
-                    // mSortByAuthorBtn.setBackgroundResource(R.drawable.border_no);
-                    // mSortByTitleBtn.setBackgroundResource(R.drawable.border_pressed);
+                    sortContentsInListView(Const.SORT_BY_CONTENT_TITLE);
+                    mSortByTitleBtn.setBackgroundResource(R.drawable.border_pressed);
+                    mSortByAuthorBtn.setBackgroundResource(R.drawable.border_no);
                 }
                 break;
             case R.id.sort_btn_byAuthor:
                 if (mSortType == Const.SORT_BY_CONTENT_AUTHOR) {
-                    Toast.makeText(mActivity, "今の並び順は既に著者順です", 1).show();
+                    Toast.makeText(mActivity, "今の並び順は既に著者順です", Toast.LENGTH_SHORT).show();
                 } else {
-                    ft.replace(R.id.fragment_container_vertical, BookShelfFragment.newInstance(
-                            mShelfStyle, Const.SORT_BY_CONTENT_AUTHOR));
-                    // mSortByTitleBtn.setBackgroundResource(R.drawable.border_no);
-                    // mSortByAuthorBtn.setBackgroundResource(R.drawable.border_pressed);
+                    sortContentsInListView(Const.SORT_BY_CONTENT_AUTHOR);
+                    mSortByTitleBtn.setBackgroundResource(R.drawable.border_no);
+                    mSortByAuthorBtn.setBackgroundResource(R.drawable.border_pressed);
                 }
                 break;
         }
-        ft.commit();
     }
 
     /**
@@ -492,6 +480,23 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
         display.getSize(size);
         int width = size.x;
         return width / Const.CONTENT_WIDTH;
+    }
+
+    private void sortContentsInListView(int sortType) {
+        mSortType = sortType;
+        mBookList = ContentsInfo.sortByTitle(mBookList, sortType);
+        mRowInfo = new ShelfRowInfo(mBookList, mNumsPerRow);
+        mRowList = mRowInfo.getRowList();
+        mShelfRowAdapter = new ShelfRowAdapter(mActivity, mRowList, this);
+        mListView.setAdapter(mShelfRowAdapter);
+        mListView.invalidate();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        // ソートタイプを記録
+        outState.putInt(Const.SORT_TYPE, mSortType);
+        super.onSaveInstanceState(outState);
     }
 
 }
