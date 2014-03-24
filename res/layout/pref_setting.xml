@@ -10,7 +10,7 @@
 
         <CheckBoxPreference
             android:defaultValue="false"
-            android:key="pref_shelf_style"
+            android:key="pref_save_shelf_style"
             android:summary="アプリ終了する前に本棚スタイルを保存しますか"
             android:title="本棚表示スタイル" />
 

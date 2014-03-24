@@ -1,96 +1,66 @@
 
 package com.example.hondana.activity;
 
-import android.content.SharedPreferences.Editor;
-
-import android.content.SharedPreferences;
-
-import android.preference.PreferenceManager;
-
-import android.app.ActionBar;
-
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.Button;
-import android.widget.GridView;
 import android.widget.Toast;
 import com.example.hondana.Const;
 import com.example.hondana.R;
 import com.example.hondana.book.Book;
 import com.example.hondana.fragment.BookShelfFragment;
-import java.util.ArrayList;
 
 public class FirstActivity extends Activity {
-    /** gridview for all books */
-    private GridView mGridView;
     private int mShelfStyle;
 
-    private Book mBook;
-    private ArrayList<Book> mAllBooks;
-    private ArrayList<Book> mSelBooks;
-
-    private Button mShowSelBtn;
-    private boolean mFinishFlag;
+    private boolean mIsAppToFinish;
 
     private FragmentManager mFragmentManager;
     private FragmentTransaction mFragmentTransaction;
     private BookShelfFragment mBookShelfFragment;
 
-    SharedPreferences mSp;
+    private SharedPreferences mSp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
         // actionbar调查
         // ActionBar actionBar = getActionBar();
         // actionBar.setDisplayShowHomeEnabled(false);
         // actionBar.setDisplayShowTitleEnabled(false);
 
-        // get preference
-        mSp = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean saveStylePref = mSp.getBoolean("pref_shelf_style", false);
-        int shelfStylePref = mSp.getInt(Const.SHELF_STYLE, -1);
-        mBook = new Book();
-        // 初次默认为书架, 要修改
+        initTestData();
         if (savedInstanceState != null) {
             mShelfStyle = savedInstanceState.getInt(Const.SHELF_STYLE, Const.GRID);
         } else {
-            // 第一次进入，读取设定值，若为真则使用列表显示
-            // 若pref中每次退出时记录当时style为真
-            if (saveStylePref && shelfStylePref != -1) {
-                mShelfStyle = shelfStylePref;
-            } else {
-                mShelfStyle = Const.GRID;
-            }
+            // sharePreferenceにより、本棚スタイルを決める
+            setShelfStyleUponPref();
         }
-        // Intent intent = getIntent();
-        // mShelfStyle = intent.getIntExtra(Const.SHELF_STYLE, Const.GRID);
-        initBooks();
+        initTestData();
         mFragmentManager = getFragmentManager();
         mFragmentTransaction = mFragmentManager.beginTransaction();
         mBookShelfFragment = BookShelfFragment.newInstance(mShelfStyle);
-        // 纵向
+        // 縦方向(現在両方同じ)
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             setContentView(R.layout.hondana_main_vertical);
             mFragmentTransaction.add(R.id.fragment_container_vertical, mBookShelfFragment);
-            // 横向
+            // 横方向
         } else {
             setContentView(R.layout.hondana_main_vertical);
             mFragmentTransaction.replace(R.id.fragment_container_vertical, mBookShelfFragment);
         }
         mFragmentTransaction.commit();
-        mShowSelBtn = (Button) this.findViewById(R.id.test_show_selected_btn);
-
-        // 结束程序标识
-        mFinishFlag = false;
+        mIsAppToFinish = false;
     }
 
     /*
@@ -113,7 +83,7 @@ public class FirstActivity extends Activity {
     }
 
     /**
-     * menu点击
+     * action barイベント定義
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -131,9 +101,24 @@ public class FirstActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void initBooks() {
+    // 删除予定
+    private void initTestData() {
         Book.setSelectedList(null);
-        mAllBooks = mBook.getAllBooks(this);
+    }
+
+    private void setShelfStyleUponPref() {
+
+        // 設定ファイルを取得
+        mSp = PreferenceManager.getDefaultSharedPreferences(this);
+        // 設定 APPを終了するとき本棚スタイルを記憶する
+        boolean pref_save_shelfStyle = mSp.getBoolean("pref_save_shelf_style", false);
+        int pref_shelf_style = mSp.getInt(Const.SHELF_STYLE, -1);
+        if (pref_save_shelfStyle && pref_shelf_style != -1) {
+            mShelfStyle = pref_shelf_style;
+        } else {
+            // ここは初入る時のみ呼ばれる
+            mShelfStyle = Const.GRID;
+        }
     }
 
     /*
@@ -155,21 +140,21 @@ public class FirstActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        // 名字getisedit要修改
+        // △△△名字getisedit要修改
         if (mBookShelfFragment.getIsEdit()) {
-            mBookShelfFragment.ChangeToNormalModeLayout();
+            mBookShelfFragment.ChangeShelfMode();
         } else {
-            if (mFinishFlag == true) {
+            if (mIsAppToFinish == true) {
                 saveShelfStyleToPref();
                 super.onBackPressed();
             } else {
-                mFinishFlag = true;
-                Toast.makeText(this, "もう一度押すとアプリが終了します", 2).show();
+                mIsAppToFinish = true;
+                Toast.makeText(this, "もう一度押してアプリを終了します", 2).show();
                 new Handler().postDelayed(new Runnable() {
 
                     @Override
                     public void run() {
-                        mFinishFlag = false;
+                        mIsAppToFinish = false;
                     }
 
                 }, 3000);
@@ -182,4 +167,5 @@ public class FirstActivity extends Activity {
         editor.putInt(Const.SHELF_STYLE, mBookShelfFragment.getShelfStyle());
         editor.commit();
     }
+
 }

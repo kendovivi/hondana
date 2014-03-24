@@ -63,7 +63,7 @@ public class BookListView extends ListView {
             top = getChildAt(0).getTop();
         }
 
-        Log.d("第一个子view的其实高为： ", String.valueOf(top));
+        //Log.d("第一个子view的其实高为： ", String.valueOf(top));
         int backgroundImgHeight = mShelfBackground.getHeight();
         int backgroundImgWidth = mShelfBackground.getWidth();
         int mScreenHeight = getHeight();

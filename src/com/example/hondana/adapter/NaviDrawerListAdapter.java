@@ -1,28 +1,22 @@
 
 package com.example.hondana.adapter;
 
-import android.widget.ImageView;
-
-import android.widget.LinearLayout;
-
-import android.view.LayoutInflater;
-
-import com.example.hondana.R;
+import com.example.hondana.Const;
 
 import android.content.Context;
-
-import android.widget.TextView;
-
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import com.example.hondana.R;
 
 public class NaviDrawerListAdapter extends BaseAdapter {
 
     private Context mContext;
-    private LinearLayout view;
-    private ViewHolder viewHolder;
+    /** navigation drawer各行のview */
+    private LinearLayout mNaviDrawerItemView;
 
     public NaviDrawerListAdapter(Context context) {
         mContext = context;
@@ -30,7 +24,7 @@ public class NaviDrawerListAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return 5;
+        return Const.NUMS_IN_NAVI;
     }
 
     @Override
@@ -47,26 +41,34 @@ public class NaviDrawerListAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         LayoutInflater inflater = (LayoutInflater) mContext
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        viewHolder = new ViewHolder();
+        ViewHolder viewHolder = new ViewHolder();
         if (convertView == null) {
-            view = (LinearLayout) inflater.inflate(R.layout.navi_drawer_list_item, null);
-            viewHolder.drawerIcon = (ImageView) view.findViewById(R.id.navi_drawer_item_icon);
-            view.setTag(viewHolder);
+            mNaviDrawerItemView = (LinearLayout) inflater.inflate(R.layout.navi_drawer_list_item,
+                    null);
+            viewHolder.drawerItemImgView = (ImageView) mNaviDrawerItemView
+                    .findViewById(R.id.navi_drawer_item_icon);
+            mNaviDrawerItemView.setTag(viewHolder);
         } else {
-            viewHolder = (ViewHolder) view.getTag();
+            viewHolder = (ViewHolder) mNaviDrawerItemView.getTag();
         }
+        // Navigation Drawer行ごとに、違うアイコンimgをつける
         switch (position) {
+        // 設定アイコン
             case 4:
-                viewHolder.drawerIcon.setImageResource(R.drawable.navi_drawer_setting_selector);
+                viewHolder.drawerItemImgView
+                        .setImageResource(R.drawable.navi_drawer_setting_selector);
                 break;
+            // ひとまずデフォルトアイコンを使う
             default:
-                viewHolder.drawerIcon.setImageResource(R.drawable.navi_drawer_shelf_style_selector);
+                viewHolder.drawerItemImgView
+                        .setImageResource(R.drawable.navi_drawer_shelf_style_selector);
         }
-        return view;
+        return mNaviDrawerItemView;
     }
 
     static class ViewHolder {
-        ImageView drawerIcon;
+        /** navigation drawer各行のアイテムアイコンImageView */
+        ImageView drawerItemImgView;
     }
 
 }

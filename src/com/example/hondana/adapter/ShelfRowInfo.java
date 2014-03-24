@@ -25,7 +25,7 @@ public class ShelfRowInfo {
         for (int row_i = 0; row_i <= mRowNums - 1; row_i++) {
             ShelfRow row = new ShelfRow();
             for (; book_j <= mItemNumInRow * (row_i+1) - 1; book_j++) {
-                //如果最后一行row不满
+                //最終行のコンテンツが行のデフォルトコンテンツ数より少ない場合
                 if (book_j >= mBookList.size()){
                     break;
                 }

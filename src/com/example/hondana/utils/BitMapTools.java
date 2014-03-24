@@ -1,3 +1,4 @@
+
 package com.example.hondana.utils;
 
 import android.content.res.Resources;
@@ -6,49 +7,53 @@ import android.graphics.BitmapFactory;
 
 public class BitMapTools {
 
-	public BitMapTools() {
-		// TODO Auto-generated constructor stub
-	}
+    public BitMapTools() {
+        // TODO Auto-generated constructor stub
+    }
 
-	/**
-	 * 
-	 * @param resources
-	 *            资源文件
-	 * @param resId
-	 *            解码位图的id
-	 * @param reqWidth
-	 *            指定输出位图的宽度
-	 * @param reqHeight
-	 *            指定输出位图的高度
-	 * @return
-	 */
-	public static Bitmap decodeBitmap(Resources resources, int resId,
-			int reqWidth, int reqHeight) {
-		// 对位图进行解码的参数设置
-		BitmapFactory.Options opts = new BitmapFactory.Options();
-		// 在对位图进行解码的过程中，避免申请内存空间
-		opts.inJustDecodeBounds = true;
-		BitmapFactory.decodeResource(resources, resId, opts);
-		// 对图片进行一定比例的压缩
-		opts.inSampleSize = calculateInSampleSize(opts, reqWidth, reqHeight);
-		// 真正输出位图
-		opts.inJustDecodeBounds = false;
-		return BitmapFactory.decodeResource(resources, resId, opts);
-	}
+    /**
+     * @param resources ソースファイル
+     * @param resId bitmapId
+     * @param reqWidth bitmapの長さを指定
+     * @param reqHeight bitmapの高さを指定
+     * @return
+     */
+    public static Bitmap decodeBitmap(Resources resources, int resId,
+            int reqWidth, int reqHeight) {
+        // decode options
+        BitmapFactory.Options opts = new BitmapFactory.Options();
+        // decode bitmapの際に，メモリの申請をしないように
+        opts.inJustDecodeBounds = true;
+        BitmapFactory.decodeResource(resources, resId, opts);
+        // bitmap圧縮比率を定義
+        opts.inSampleSize = calculateInSampleSize(opts, reqWidth, reqHeight);
+        // メモリを申請
+        opts.inJustDecodeBounds = false;
+        return BitmapFactory.decodeResource(resources, resId, opts);
+    }
 
-	public static int calculateInSampleSize(BitmapFactory.Options opts,
-			int reqWidth, int reqHeight) {
-		int imageHeight = opts.outHeight;
-		int imageWidth = opts.outWidth;
-		int inSampleSize = 1; // 压缩比例
-		if (imageHeight > reqHeight || imageWidth > reqWidth) {
-			final int heightRatio = Math.round((float) imageHeight
-					/ (float) reqHeight);
-			final int widthRatio = Math.round((float) imageWidth
-					/ (float) reqWidth);
-			inSampleSize = heightRatio < widthRatio ? heightRatio : widthRatio;
-		}
-		return inSampleSize;
-	}
+    /**
+     * 元bitmap長さ、高さと指定された長さと高さを比較する結果により、圧縮比率を決める
+     * 
+     * @param opts
+     * @param reqWidth
+     * @param reqHeight
+     * @return
+     */
+    public static int calculateInSampleSize(BitmapFactory.Options opts,
+            int reqWidth, int reqHeight) {
+        int imageHeight = opts.outHeight;
+        int imageWidth = opts.outWidth;
+        // 压缩比例
+        int inSampleSize = 1;
+        if (imageHeight > reqHeight || imageWidth > reqWidth) {
+            final int heightRatio = Math.round((float) imageHeight
+                    / (float) reqHeight);
+            final int widthRatio = Math.round((float) imageWidth
+                    / (float) reqWidth);
+            inSampleSize = heightRatio < widthRatio ? heightRatio : widthRatio;
+        }
+        return inSampleSize;
+    }
 
 }

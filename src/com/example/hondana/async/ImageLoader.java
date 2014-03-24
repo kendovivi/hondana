@@ -13,17 +13,19 @@ import android.os.AsyncTask;
 
 public class ImageLoader extends AsyncTask<Book, Integer, Bitmap> {
 
-	private Activity mActivity;
-    /** 读取中的图片，最终显示用 */
+    private Activity mActivity;
+    /** drawableにあるコンテンツ画像Id */
     private int mContentImgId;
-    //private Bitmap mLoadingCover;
+    /** コンテンツthumb nail読み込み中の画像 */
+    private Bitmap mLoadingCover;
+    /** コンテンツthumb nailのimageView */
     private ImageView mImageView;
-    
+
     public ImageLoader(ImageView imageView, Activity activity) {
-        mImageView = imageView; 
+        mImageView = imageView;
         mActivity = activity;
     }
-    
+
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
@@ -42,7 +44,6 @@ public class ImageLoader extends AsyncTask<Book, Integer, Bitmap> {
 
     @Override
     protected void onProgressUpdate(Integer... values) {
-        
         super.onProgressUpdate(values);
     }
 }
