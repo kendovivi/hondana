@@ -136,8 +136,8 @@ public class ShelfRowAdapter extends BaseAdapter {
             // リスト表示の場合、コンテンツ詳細情報とソート機能レイアウトを表示
             if (mShelfStyle == Const.LIST) {
                 viewHolder.bookDetailsLayout.setVisibility(View.VISIBLE);
-                viewHolder.bookTitleView.setText("test_title_view");
-                viewHolder.bookAuthorView.setText("test_author_view");
+                viewHolder.bookTitleView.setText(mCurrentRow.getBookListInRow().get(i).getBookTitle());
+                viewHolder.bookAuthorView.setText(mCurrentRow.getBookListInRow().get(i).getBookAuthor());
             }
         }
         return mRowView;

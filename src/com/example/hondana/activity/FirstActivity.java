@@ -1,6 +1,8 @@
 
 package com.example.hondana.activity;
 
+import com.example.hondana.book.ContentsInfo;
+
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -91,7 +93,7 @@ public class FirstActivity extends Activity {
         switch (item.getItemId()) {
         // 重置为grid
             case R.id.menu_edit:
-                Book.setSelectedList(null);
+                ContentsInfo.setSelectedContents(null);
                 mShelfStyle = Const.GRID;
                 mBookShelfFragment = BookShelfFragment.newInstance(mShelfStyle);
                 mFragmentTransaction.replace(R.id.fragment_container_vertical, mBookShelfFragment);
@@ -103,7 +105,7 @@ public class FirstActivity extends Activity {
 
     // 删除予定
     private void initTestData() {
-        Book.setSelectedList(null);
+        ContentsInfo.setSelectedContents(null);
     }
 
     private void setShelfStyleUponPref() {

@@ -1,54 +1,44 @@
 
 package com.example.hondana.book;
 
-import android.content.Context;
-import com.example.hondana.R;
-import java.util.ArrayList;
 
 public class Book {
     /** コンテンツタイトル */
-    private String mBookName = "bookname";
+    private String mBookTitle;
     /** コンテンツ画像resource Id */
     private int mBookImgResId;
     /** 最近読んだコンテンツであるか */
+    private String mBookAuthor;
     private boolean mBookIsRec = false;
     /** 選択されたコンテンツであるか */
-    private boolean mBookSelected = false;
+    private boolean mIsSelected = false;
 
-    // 削除予定、parcebleに変更？
-    public static ArrayList<Book> sSelectedList = null;
-
-    public Book() {
-
+    public Book(String title, int resId, String author) {
+        this.mBookTitle = title;
+        this.mBookImgResId = resId;
+        this.mBookAuthor = author;
     };
 
-    private Book(String bookName, int resId) {
-        this.mBookName = bookName;
-        this.mBookImgResId = resId;
-    };
-
-    private Book(String bookName, int resId, boolean bookIsRec) {
-        this.mBookName = bookName;
-        this.mBookImgResId = resId;
-        this.mBookIsRec = bookIsRec;
+    public String getBookTitle() {
+        return mBookTitle;
     }
 
-    public String getBookName() {
-        return mBookName;
-    }
-
-    public void setBookName(String bookName) {
-        this.mBookName = bookName;
+    public void setBookTitle(String title) {
+        this.mBookTitle = title;
     }
 
     public int getBookImgId() {
         return mBookImgResId;
     }
 
-    public void setBookImage(int resId) {
-        this.mBookImgResId = resId;
+    public String getBookAuthor() {
+        return mBookAuthor;
     }
-
+    
+    public void setBookAuthor(String author) {
+        this.mBookAuthor = author;
+    }
+    
     public boolean getBookIsRec() {
         return mBookIsRec;
     }
@@ -58,40 +48,11 @@ public class Book {
     }
 
     public boolean getBookSelected() {
-        return mBookSelected;
+        return mIsSelected;
     }
 
-    public void setBookSelected(boolean bookSelected) {
-        this.mBookSelected = bookSelected;
+    public void setBookSelected(boolean isSelected) {
+        this.mIsSelected = isSelected;
     }
 
-    public ArrayList<Book> getAllBooks(Context c) {
-        ArrayList<Book> bookList = new ArrayList<Book>();
-        bookList.add(new Book("sample1", R.drawable.sample1));
-        bookList.add(new Book("sample2", R.drawable.sample1));
-        bookList.add(new Book("sample3", R.drawable.sample3));
-        bookList.add(new Book("sample4", R.drawable.sample4));
-        bookList.add(new Book("sample5", R.drawable.sample5));
-        bookList.add(new Book("sample6", R.drawable.sample6));
-        bookList.add(new Book("sample7", R.drawable.sample7));
-        bookList.add(new Book("sample8", R.drawable.sample8));
-        bookList.add(new Book("sample9", R.drawable.sample9));
-        bookList.add(new Book("sample10", R.drawable.sample10));
-        return bookList;
-    }
-
-    public ArrayList<Book> getRecBooks(Context c) {
-        ArrayList<Book> bookList = new ArrayList<Book>();
-        bookList.add(new Book("sample5", R.drawable.sample7, true));
-        bookList.add(new Book("sample6", R.drawable.sample6, true));
-        return bookList;
-    }
-
-    public static ArrayList<Book> getSelectedList() {
-        return sSelectedList;
-    }
-
-    public static void setSelectedList(ArrayList<Book> selectedList) {
-        sSelectedList = selectedList;
-    }
 }

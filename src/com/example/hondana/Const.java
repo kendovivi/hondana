@@ -18,4 +18,12 @@ public class Const {
     public static final int CONTENT_WIDTH = 180;
     /** Navigation Drawerのアイテム数 */
     public static final int NUMS_IN_NAVI = 5;
+
+    // SORT
+    /** コンテンツソート順 */
+    public static final String SORT_TYPE = "sort_type";
+    /** コンテンツタイトル順でソート */
+    public static final int SORT_BY_CONTENT_TITLE = 1;
+    /** コンテンツ著者順でソート */
+    public static final int SORT_BY_CONTENT_AUTHOR = 2;
 }

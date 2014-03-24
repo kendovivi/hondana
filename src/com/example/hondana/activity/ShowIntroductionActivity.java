@@ -1,6 +1,8 @@
 
 package com.example.hondana.activity;
 
+import com.example.hondana.book.ContentsInfo;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -27,17 +29,17 @@ public class ShowIntroductionActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.book_introduction);
 
-        Book book = new Book();
         Intent intent = getIntent();
         mBookPosition = intent.getIntExtra(Const.BOOK_ONCLICK, 0);
         int flag = intent.getIntExtra(Const.FROM_ALL_OR_SEL, 0) ;
 
         switch (flag) {
             case FROM_ALL:
-                mBookList = book.getAllBooks(this);
+                ContentsInfo contentsInfo = new ContentsInfo();
+                mBookList = contentsInfo.getTestContents();
                 break;
             case FROM_SECLECTED:
-                mBookList = Book.getSelectedList();
+                mBookList = ContentsInfo.getSelectedContents();
                 break;
         }
 
@@ -49,6 +51,6 @@ public class ShowIntroductionActivity extends Activity {
         int resId = mBookToShow.getBookImgId();
         Bitmap bitmap = BitMapTools.decodeBitmap(getResources(), resId, 75, 100);
         bookImageView.setImageBitmap(bitmap);
-        bookTextView.setText(mBookToShow.getBookName());
+        bookTextView.setText(mBookToShow.getBookTitle());
     }
 }
