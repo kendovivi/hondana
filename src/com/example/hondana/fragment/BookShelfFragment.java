@@ -1,15 +1,14 @@
 
 package com.example.hondana.fragment;
 
-import com.example.hondana.book.ContentsInfo;
+import android.support.v4.widget.DrawerLayout;
 
-import java.util.ArrayList;
+import com.example.hondana.activity.FirstActivity;
 
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.Intent;
 import android.graphics.Point;
@@ -18,8 +17,10 @@ import android.util.Log;
 import android.view.Display;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.View.DragShadowBuilder;
 import android.view.View.OnClickListener;
 import android.view.View.OnDragListener;
 import android.view.View.OnLongClickListener;
@@ -35,7 +36,6 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
-
 import com.example.hondana.Const;
 import com.example.hondana.R;
 import com.example.hondana.activity.SettingActivity;
@@ -45,6 +45,8 @@ import com.example.hondana.adapter.ShelfRow;
 import com.example.hondana.adapter.ShelfRowAdapter;
 import com.example.hondana.adapter.ShelfRowInfo;
 import com.example.hondana.book.Book;
+import com.example.hondana.book.ContentsInfo;
+import java.util.ArrayList;
 
 public class BookShelfFragment extends Fragment implements OnClickListener {
     private Activity mActivity;
@@ -52,6 +54,8 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
     private int mShelfStyle;
     /** 本棚ソート順　 */
     private int mSortType;
+    /** 本棚の下にmenuを表示するか */
+    private boolean mHasMenu;
     /** 各行になるコンテンツの数 */
     private int mNumsPerRow;
     /** 表示するコンテンツリスト */
@@ -72,15 +76,16 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
     private LinearLayout mBookShelfFooterView;
     /** 選択されたコンテンツを表示する用ボタン */
     private Button mShowSelectedBtn;
-    private Button mSortByTitleBtn;
-    private Button mSortByAuthorBtn;
+    private Menu mMenu;
 
+    /** Navigation Drawer layout */
+    private DrawerLayout mNaviDrawerLayout;
     /** Navigation Drawer view */
     private ListView mNaviListView;
     /** 表示するデータソース： 全部 / checkboxの選択 */
     private int mShowFlag;
     /** 本棚モードは編集モードであるか */
-    private boolean mIsEdit;
+    private int mShelfMode;
     private static final int FROM_ALL = 0;
     private static final int FROM_SELECTED = 1;
 
@@ -101,7 +106,9 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mActivity = getActivity();
+        mShelfMode = Const.SHELF_MODE_NORMAL;
         mShelfStyle = getArguments().getInt(Const.SHELF_STYLE);
+
         if (savedInstanceState != null && savedInstanceState.containsKey(Const.SORT_TYPE)) {
             mSortType = savedInstanceState.getInt(Const.SORT_TYPE);
         } else {
@@ -110,15 +117,7 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
         }
 
         System.out.println("-- shelfstyle --- >>" + mShelfStyle);
-        switch (mShelfStyle) {
-            case Const.GRID:
-                // 行にあるコンテンツ数を計算
-                mNumsPerRow = caculateNumInRow(mActivity);
-                break;
-            case Const.LIST:
-                mNumsPerRow = 1;
-                break;
-        }
+
         // △△△選択リストがある場合、選択リストを表示する　要修正
         mSelectedBookList = ContentsInfo.getSelectedContents();
 
@@ -130,9 +129,8 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
             mBookList = contentsInfo.getTestContents();
             mShowFlag = FROM_ALL;
         }
-        // コンテンツ数情報により、行リストを作る
-        mRowInfo = new ShelfRowInfo(mBookList, mNumsPerRow);
-        mRowList = mRowInfo.getRowList();
+
+        setRowListUponShelfStyle(mShelfStyle, mBookList);
     }
 
     @Override
@@ -142,36 +140,24 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
         mListView = (ListView) view.findViewById(R.id.shelf_listview_v);
         mShowSelectedBtn = (Button) view
                 .findViewById(R.id.test_show_selected_btn);
-        // Navigation Drawerレイアウト
+        //
+        mNaviDrawerLayout = (DrawerLayout) view.findViewById(R.id.navi_drawer_layout);
+        // Navigation Drawerリスト
         mNaviListView = (ListView) view.findViewById(R.id.navi_drawer_listview);
         // ヘッドとフォトのレイアウト
         mBookShelfFooterView = (LinearLayout) inflater.inflate(
                 R.layout.bookshelf_footer, mListView, false);
         mBookShelfHeaderView = (LinearLayout) inflater.inflate(
                 R.layout.bookshelf_header, mListView, false);
-
-        // 删除预定
-        mSortByTitleBtn = (Button) mBookShelfHeaderView.findViewById(R.id.sort_btn_byTitle);
-        mSortByAuthorBtn = (Button) mBookShelfHeaderView.findViewById(R.id.sort_btn_byAuthor);
-        if (mSortType == Const.SORT_BY_CONTENT_TITLE) {
-            mSortByTitleBtn.setBackgroundResource(R.drawable.border_pressed);
-            mSortByAuthorBtn.setBackgroundResource(R.drawable.border_no);
-        } else {
-            mSortByTitleBtn.setBackgroundResource(R.drawable.border_no);
-            mSortByAuthorBtn.setBackgroundResource(R.drawable.border_pressed);
-        }
-
-        mSortByTitleBtn.setOnClickListener(this);
-        mSortByAuthorBtn.setOnClickListener(this);
-
         return view;
     }
 
-    // @Override
-    // public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-    // inflater.inflate(R.menu.hondana_menu, menu);
-    // super.onCreateOptionsMenu(menu, inflater);
-    // }
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        this.mMenu = menu;
+        inflater.inflate(R.menu.hondana_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -191,28 +177,34 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
     }
 
     @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.show_selected_btn:
-                showSelected();
-                break;
-            case R.id.sort_btn_byTitle:
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+
+        // タイトル順で並び替え
+            case R.id.actionbar_sort_by_title:
                 if (mSortType == Const.SORT_BY_CONTENT_TITLE) {
                     Toast.makeText(mActivity, "今の並び順は既にタイトル順です", Toast.LENGTH_SHORT).show();
                 } else {
                     sortContentsInListView(Const.SORT_BY_CONTENT_TITLE);
-                    mSortByTitleBtn.setBackgroundResource(R.drawable.border_pressed);
-                    mSortByAuthorBtn.setBackgroundResource(R.drawable.border_no);
                 }
                 break;
-            case R.id.sort_btn_byAuthor:
+            // 著者順で並び替え
+            case R.id.actionbar_sort_by_author:
                 if (mSortType == Const.SORT_BY_CONTENT_AUTHOR) {
-                    Toast.makeText(mActivity, "今の並び順は既に著者順です", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mActivity, "今の並びは既に著者順です", Toast.LENGTH_SHORT).show();
                 } else {
                     sortContentsInListView(Const.SORT_BY_CONTENT_AUTHOR);
-                    mSortByTitleBtn.setBackgroundResource(R.drawable.border_no);
-                    mSortByAuthorBtn.setBackgroundResource(R.drawable.border_pressed);
                 }
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.show_selected_btn:
+                showSelected();
                 break;
         }
     }
@@ -252,7 +244,7 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
             public void onClick(View v) {
                 Intent intent = new Intent();
                 intent.setClass(mActivity, ShowIntroductionActivity.class);
-                int position = mShelfStyle == Const.GRID ? row * 4 + column
+                int position = mShelfStyle == Const.SHELF_STYLE_GRID ? row * 4 + column
                         : row;
                 intent.putExtra(Const.BOOK_ONCLICK, position);
                 intent.putExtra(Const.FROM_ALL_OR_SEL, mShowFlag);
@@ -295,7 +287,6 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
             @Override
             public boolean onLongClick(View v) {
                 ChangeShelfMode();
-
                 // 拖动设定开始（要修改）
                 // ClipData.Item item = new ClipData.Item("icondrag");
                 // ClipData dragData = new ClipData("icondrag",
@@ -370,6 +361,7 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
                         mActivity.startActivity(intent);
                         break;
                 }
+                mNaviDrawerLayout.closeDrawers();
             }
         };
         return listener;
@@ -381,23 +373,35 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
     }
 
     /** 本棚モードを取得 */
-    public boolean getIsEdit() {
-        return mIsEdit;
+    public int getShelfMode() {
+        return mShelfMode;
+    }
+
+    private int setShelfMode() {
+
+        return 0;
     }
 
     /**
      * 本棚モードの切り替え
      */
     public void ChangeShelfMode() {
+
         Button showSelBtn = (Button) mListView
                 .findViewById(R.id.show_selected_btn);
         // 編集モードの場合、普通モードに変更し、ボタンを消す
-        if (mIsEdit) {
-            mIsEdit = false;
+        if (mShelfMode == Const.SHELF_MODE_EDIT) {
+            mShelfMode = Const.SHELF_MODE_NORMAL;
+            setHasOptionsMenu(false);
             showSelBtn.setVisibility(View.GONE);
-            // 　普通モードの場合、編集モードに変更し、ボタンを表示
+            // 普通モードの場合、編集モードに変更し、ボタンを表示
         } else {
-            mIsEdit = true;
+            mShelfMode = Const.SHELF_MODE_EDIT;
+            setHasOptionsMenu(true);
+            // 　△△△actionbar の(あるボタン)を見えるようにする　
+            MenuItem menuItem = mMenu.findItem(R.id.actionbar_reset);
+            menuItem.setVisible(true);
+
             showSelBtn.setVisibility(View.VISIBLE);
             showSelBtn.setOnClickListener(this);
         }
@@ -408,13 +412,21 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
      * 本棚表示スタイルの切り替え
      */
     private void changeShelfStyle() {
-        mShelfStyle = mShelfStyle == Const.GRID ? Const.LIST : Const.GRID;
-        FragmentManager fragmentManager = getFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager
-                .beginTransaction();
-        fragmentTransaction.replace(R.id.fragment_container_vertical,
-                BookShelfFragment.newInstance(mShelfStyle));
-        fragmentTransaction.commit();
+        mShelfStyle = mShelfStyle == Const.SHELF_STYLE_GRID ? Const.SHELF_STYLE_LIST
+                : Const.SHELF_STYLE_GRID;
+        Log.d("changeShelfStyle", "-->> mShelfStyle -->>" + mShelfStyle);
+        // クラス変数mRowListをセット
+        setRowListUponShelfStyle(mShelfStyle, mBookList);
+        // 本棚コンテンツviewを再描画
+        mShelfRowAdapter = new ShelfRowAdapter(getActivity(), mRowList, this);
+        mListView.setAdapter(mShelfRowAdapter);
+        if (mShelfStyle == Const.SHELF_STYLE_GRID) {
+            mHasMenu = false;
+        } else {
+            mHasMenu = true;
+        }
+        setHasOptionsMenu(mHasMenu);
+        mListView.invalidate();
     }
 
     /**
@@ -497,6 +509,24 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
         // ソートタイプを記録
         outState.putInt(Const.SORT_TYPE, mSortType);
         super.onSaveInstanceState(outState);
+    }
+
+    private void setRowListUponShelfStyle(int shelfStyle, ArrayList<Book> bookList) {
+        switch (shelfStyle) {
+            case Const.SHELF_STYLE_GRID:
+                // 表示モードが本棚の場合、一行のコンテンツ数はディスプレイ次第にする
+                mNumsPerRow = caculateNumInRow(mActivity);
+                break;
+            case Const.SHELF_STYLE_LIST:
+                // 表示モードがリストの場合、一行にコンテンツ数を1にする
+                mNumsPerRow = 1;
+                break;
+            default:
+                break;
+        }
+        // コンテンツ数情報により、行リストを作る
+        mRowInfo = new ShelfRowInfo(bookList, mNumsPerRow);
+        mRowList = mRowInfo.getRowList();
     }
 
 }

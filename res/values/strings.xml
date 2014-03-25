@@ -7,6 +7,9 @@
     <string name="show_selected_books_btn_text">show selected</string>
 
     <!-- action_bar menu_item -->
-    <string name="menu_refresh">ホーム</string>
+    <string name="actionbar_reset">リセット</string>
+    <string name="actionbar_sort_by_title">タイトル順並び替え</string>
+    <string name="actionbar_sort_by_author">著者順並び替え</string>
+    <string name="actionbar_reSet">リセット</string>
 
 </resources>

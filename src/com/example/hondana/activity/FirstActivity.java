@@ -1,8 +1,6 @@
 
 package com.example.hondana.activity;
 
-import com.example.hondana.book.ContentsInfo;
-
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -12,13 +10,10 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.widget.Toast;
 import com.example.hondana.Const;
 import com.example.hondana.R;
-import com.example.hondana.book.Book;
+import com.example.hondana.book.ContentsInfo;
 import com.example.hondana.fragment.BookShelfFragment;
 
 public class FirstActivity extends Activity {
@@ -35,7 +30,7 @@ public class FirstActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+
         // actionbar调查
         // ActionBar actionBar = getActionBar();
         // actionBar.setDisplayShowHomeEnabled(false);
@@ -43,7 +38,7 @@ public class FirstActivity extends Activity {
 
         initTestData();
         if (savedInstanceState != null) {
-            mShelfStyle = savedInstanceState.getInt(Const.SHELF_STYLE, Const.GRID);
+            mShelfStyle = savedInstanceState.getInt(Const.SHELF_STYLE, Const.SHELF_STYLE_GRID);
         } else {
             // sharePreferenceにより、本棚スタイルを決める
             setShelfStyleUponPref();
@@ -71,36 +66,18 @@ public class FirstActivity extends Activity {
      * menu.add(0, 1, 0, "menu1"); menu.add(0, 2, 0,"menu2"); }
      */
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.hondana_menu, menu);
-        return true;
-    }
+    // @Override
+    // public boolean onCreateOptionsMenu(Menu menu) {
+    // MenuInflater inflater = getMenuInflater();
+    // inflater.inflate(R.menu.hondana_menu, menu);
+    // //デフォルトは表示しない
+    // return false;
+    // }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putInt(Const.SHELF_STYLE, mBookShelfFragment.getShelfStyle());
         super.onSaveInstanceState(outState);
-    }
-
-    /**
-     * action barイベント定義
-     */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        mFragmentTransaction = mFragmentManager.beginTransaction();
-        switch (item.getItemId()) {
-        // 重置为grid
-            case R.id.menu_edit:
-                ContentsInfo.setSelectedContents(null);
-                mShelfStyle = Const.GRID;
-                mBookShelfFragment = BookShelfFragment.newInstance(mShelfStyle);
-                mFragmentTransaction.replace(R.id.fragment_container_vertical, mBookShelfFragment);
-                mFragmentTransaction.commit();
-                break;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     // 删除予定
@@ -119,7 +96,7 @@ public class FirstActivity extends Activity {
             mShelfStyle = pref_shelf_style;
         } else {
             // ここは初入る時のみ呼ばれる
-            mShelfStyle = Const.GRID;
+            mShelfStyle = Const.SHELF_STYLE_GRID;
         }
     }
 
@@ -142,8 +119,10 @@ public class FirstActivity extends Activity {
 
     @Override
     public void onBackPressed() {
+        System.out.println("-->> firstActivity中 mBookFragment.getShelfMode == "
+                + mBookShelfFragment.getShelfMode());
         // △△△名字getisedit要修改
-        if (mBookShelfFragment.getIsEdit()) {
+        if (mBookShelfFragment.getShelfMode() == Const.SHELF_MODE_EDIT) {
             mBookShelfFragment.ChangeShelfMode();
         } else {
             if (mIsAppToFinish == true) {
@@ -165,9 +144,11 @@ public class FirstActivity extends Activity {
     }
 
     private void saveShelfStyleToPref() {
-        Editor editor = mSp.edit();
-        editor.putInt(Const.SHELF_STYLE, mBookShelfFragment.getShelfStyle());
-        editor.commit();
+        if (mSp != null) {
+            Editor editor = mSp.edit();
+            editor.putInt(Const.SHELF_STYLE, mBookShelfFragment.getShelfStyle());
+            editor.commit();
+        }
     }
 
 }

@@ -126,7 +126,7 @@ public class ShelfRowAdapter extends BaseAdapter {
             viewHolder.bookCheckBox.setOnCheckedChangeListener(mBookShelfFragment
                     .onCheckedChangeListener(row, column, viewHolder.bookImageView));
             // 表示モード(編集　/ 普通)により、checkboxを表示するかの判断
-            if (mBookShelfFragment.getIsEdit()) {
+            if (mBookShelfFragment.getShelfMode() == Const.SHELF_MODE_EDIT) {
                 viewHolder.bookCheckBox.setVisibility(View.VISIBLE);
                 bookView.setOnClickListener(mBookShelfFragment.onEditClickListener());
             } else {
@@ -136,7 +136,7 @@ public class ShelfRowAdapter extends BaseAdapter {
             bookView.setOnLongClickListener(mBookShelfFragment.onLongClickListener());
 
             // リスト表示の場合、コンテンツ詳細情報とソート機能レイアウトを表示
-            if (mShelfStyle == Const.LIST) {
+            if (mShelfStyle == Const.SHELF_STYLE_LIST) {
                 viewHolder.bookDetailsLayout.setVisibility(View.VISIBLE);
                 viewHolder.bookTitleView.setText(mCurrentRow.getBookListInRow().get(i)
                         .getBookTitle());
@@ -145,9 +145,6 @@ public class ShelfRowAdapter extends BaseAdapter {
             }
         }
 
-        if (mShelfStyle == Const.LIST) {
-            mListView.findViewById(R.id.sort).setVisibility(View.VISIBLE);
-        }
         return mRowView;
     }
 
