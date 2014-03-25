@@ -1,10 +1,6 @@
 
 package com.example.hondana.fragment;
 
-import android.support.v4.widget.DrawerLayout;
-
-import com.example.hondana.activity.FirstActivity;
-
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -13,6 +9,7 @@ import android.content.ClipDescription;
 import android.content.Intent;
 import android.graphics.Point;
 import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.Display;
 import android.view.DragEvent;
@@ -74,8 +71,6 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
     private LinearLayout mBookShelfHeaderView;
     /** 本棚フォト */
     private LinearLayout mBookShelfFooterView;
-    /** 選択されたコンテンツを表示する用ボタン */
-    private Button mShowSelectedBtn;
     private Menu mMenu;
 
     /** Navigation Drawer layout */
@@ -131,6 +126,12 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
         }
 
         setRowListUponShelfStyle(mShelfStyle, mBookList);
+
+        // △△△問題あり、menuが複数追加されることになった
+        if (mShelfStyle == Const.SHELF_STYLE_LIST) {
+            mHasMenu = true;
+            setHasOptionsMenu(mHasMenu);
+        }
     }
 
     @Override
@@ -138,8 +139,6 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
             Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment, container, false);
         mListView = (ListView) view.findViewById(R.id.shelf_listview_v);
-        mShowSelectedBtn = (Button) view
-                .findViewById(R.id.test_show_selected_btn);
         //
         mNaviDrawerLayout = (DrawerLayout) view.findViewById(R.id.navi_drawer_layout);
         // Navigation Drawerリスト
@@ -162,8 +161,7 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mShowSelectedBtn.setOnClickListener(this);
-        // 　本棚背景を描画する時一行目がヘッドを分かれるようにヘッドのviewにtagをつける
+        // 本棚背景を描画する時一行目がヘッドを分かれるようにヘッドのviewにtagをつける
         mBookShelfHeaderView.setTag("ListViewHeader");
         // 本棚にヘッド、フォトを追加
         mListView.addFooterView(mBookShelfFooterView);
@@ -196,6 +194,11 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
                     sortContentsInListView(Const.SORT_BY_CONTENT_AUTHOR);
                 }
                 break;
+            case R.id.actionbar_show_selected:
+                showSelected();
+                break;
+            default:
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -220,14 +223,15 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
             }
         }
         mSelectedBookList = list;
+        if (mSelectedBookList.size() >0) {
         ContentsInfo.setSelectedContents(mSelectedBookList);
-        // △△△fragmentを再描画する。選択されたコンテンツリストが空ではないので、表示される△△△
-        FragmentManager fm = getFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction();
-        ft.replace(R.id.fragment_container_vertical,
-                BookShelfFragment.newInstance(mShelfStyle));
-        ft.commit();
-        mShowSelectedBtn.setVisibility(View.INVISIBLE);
+        setRowListUponShelfStyle(mShelfStyle, mSelectedBookList);
+        mShelfRowAdapter = new ShelfRowAdapter(getActivity(), mRowList, this);
+        mListView.setAdapter(mShelfRowAdapter);
+        mListView.invalidateViews();
+        } else {
+            Toast.makeText(mActivity, "コンテンツを選択してください", Toast.LENGTH_SHORT).show();
+        }
     }
 
     /**
@@ -383,33 +387,32 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
     }
 
     /**
-     * 本棚モードの切り替え
+     * 本棚モードの切り替え　△△△要修正
      */
     public void ChangeShelfMode() {
-
-        Button showSelBtn = (Button) mListView
-                .findViewById(R.id.show_selected_btn);
         // 編集モードの場合、普通モードに変更し、ボタンを消す
         if (mShelfMode == Const.SHELF_MODE_EDIT) {
             mShelfMode = Const.SHELF_MODE_NORMAL;
             setHasOptionsMenu(false);
-            showSelBtn.setVisibility(View.GONE);
             // 普通モードの場合、編集モードに変更し、ボタンを表示
         } else {
             mShelfMode = Const.SHELF_MODE_EDIT;
             setHasOptionsMenu(true);
             // 　△△△actionbar の(あるボタン)を見えるようにする　
-            MenuItem menuItem = mMenu.findItem(R.id.actionbar_reset);
+            MenuItem menuItem = mMenu.findItem(R.id.actionbar_show_selected);
             menuItem.setVisible(true);
-
-            showSelBtn.setVisibility(View.VISIBLE);
-            showSelBtn.setOnClickListener(this);
+            if (mShelfStyle == Const.SHELF_STYLE_GRID) {
+                MenuItem title_menu = mMenu.findItem(R.id.actionbar_sort_by_title);
+                MenuItem author_menu = mMenu.findItem(R.id.actionbar_sort_by_author);
+                title_menu.setVisible(false);
+                author_menu.setVisible(false);
+            }
         }
         mListView.invalidateViews();
     }
 
     /**
-     * 本棚表示スタイルの切り替え
+     * 本棚表示スタイルの切り替え　　△△△要修正
      */
     private void changeShelfStyle() {
         mShelfStyle = mShelfStyle == Const.SHELF_STYLE_GRID ? Const.SHELF_STYLE_LIST

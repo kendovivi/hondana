@@ -18,10 +18,10 @@
         android:showAsAction="always|withText"
         android:title="@string/actionbar_sort_by_author"/>
     <item
-        android:id="@+id/actionbar_reset"
-        android:icon="@android:drawable/ic_menu_search"
+        android:id="@+id/actionbar_show_selected"
+        android:icon="@android:drawable/ic_menu_slideshow"
         android:showAsAction="always|withText"
-        android:title="@string/actionbar_reset"
+        android:title="@string/actionbar_showSelected"
         android:visible="false"/>
 
 </menu>
