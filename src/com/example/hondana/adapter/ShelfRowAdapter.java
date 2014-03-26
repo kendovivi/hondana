@@ -1,6 +1,8 @@
 
 package com.example.hondana.adapter;
 
+import android.view.KeyEvent.DispatcherState;
+
 import android.widget.ListView;
 
 import android.app.Activity;
@@ -38,19 +40,6 @@ public class ShelfRowAdapter extends BaseAdapter {
     private int mCellsNumInRow;
     /** getViewを行っている行にあるる各コンテンツview */
     private RelativeLayout mItemView;
-    /** 本棚表示スタイル */
-    private int mShelfStyle;
-
-    // /** 当前正在创建的getView的item所处行数是否为gridView的第一行 */
-    // private static boolean mIsHeader;
-    // /** 当前正在创建的getView的item所处行数是否为gridView的最后一行 */
-    // private static boolean mIsBottom;
-    // /** 前一个创建的getView的item的位置 */
-    // private int lastPosition = -1;
-    // private final static int SCROLL_UP = 0;
-    // private final static int SCROLL_DOWN = 1;
-    // /** 滚轴滚动方向 */
-    // private int mScrollOrientation;
 
     public ShelfRowAdapter(Context context, ArrayList<ShelfRow> rowList,
             BookShelfFragment bookShelfFragment) {
@@ -58,7 +47,6 @@ public class ShelfRowAdapter extends BaseAdapter {
         mBookShelfFragment = bookShelfFragment;
         mActivity = (Activity) context;
         mRowList = rowList;
-        mShelfStyle = mBookShelfFragment.getShelfStyle();
     }
 
     @Override
@@ -118,31 +106,46 @@ public class ShelfRowAdapter extends BaseAdapter {
 
         // 行にある各コンテンツのイベントを定義　△△△要整理
         for (int i = 0; i < mRowView.getChildCount(); i++) {
+            // コンテンツの列目
             final int column = i;
+            // 　コンテンツレイアウト
             final RelativeLayout bookView = (RelativeLayout) mRowView.getChildAt(i);
             // △△△　为什么这样写出错
             viewHolder.bookImageView = (ImageView) bookView.findViewById(R.id.bookimage);
             viewHolder.bookCheckBox = (CheckBox) bookView.findViewById(R.id.checkbox);
             viewHolder.bookCheckBox.setOnCheckedChangeListener(mBookShelfFragment
                     .onCheckedChangeListener(row, column, viewHolder.bookImageView));
-            // 表示モード(編集　/ 普通)により、checkboxを表示するかの判断
-            if (mBookShelfFragment.getShelfMode() == Const.SHELF_MODE_EDIT) {
-                viewHolder.bookCheckBox.setVisibility(View.VISIBLE);
-                bookView.setOnClickListener(mBookShelfFragment.onEditClickListener());
-            } else {
-                viewHolder.bookCheckBox.setVisibility(View.INVISIBLE);
-                bookView.setOnClickListener(mBookShelfFragment.onNoEditClickListener(row, column));
-            }
-            bookView.setOnLongClickListener(mBookShelfFragment.onLongClickListener());
 
-            // リスト表示の場合、コンテンツ詳細情報とソート機能レイアウトを表示
-            if (mShelfStyle == Const.SHELF_STYLE_LIST) {
-                viewHolder.bookDetailsLayout.setVisibility(View.VISIBLE);
-                viewHolder.bookTitleView.setText(mCurrentRow.getBookListInRow().get(i)
-                        .getBookTitle());
-                viewHolder.bookAuthorView.setText(mCurrentRow.getBookListInRow().get(i)
-                        .getBookAuthor());
+            // 表示モードによる変更
+            switch (mBookShelfFragment.getShelfMode()) {
+            // 編集モードの場合　1、checkBox表示　2、thumb　nailクリックして、checkboxのcheck statusを変更
+            // 3、 todo:
+                case Const.SHELF_MODE_EDIT:
+                    viewHolder.bookCheckBox.setVisibility(View.VISIBLE);
+                    bookView.setOnClickListener(mBookShelfFragment.onEditModeClickListener());
+                    break;
+                // ノーマルモードの場合　1、checkBox非表示　2、thumb
+                // nailクリックして、コンテンツ詳細画面に移動　　3、todo：
+                case Const.SHELF_MODE_NORMAL:
+                    viewHolder.bookCheckBox.setVisibility(View.INVISIBLE);
+                    bookView.setOnClickListener(mBookShelfFragment.onNormalModeClickListener(row,
+                            column));
+                    break;
             }
+            // 長押しイベント　ノーマルと編集モードを切り替え
+            bookView.setOnLongClickListener(mBookShelfFragment.onLongClickListener());
+            // 本棚スタイルによる変更
+            switch (mBookShelfFragment.getShelfStyle()) {
+            // 本棚リスト表示の場合　1、コンテンツ情報を右側に表示する
+                case Const.SHELF_STYLE_LIST:
+                    viewHolder.bookDetailsLayout.setVisibility(View.VISIBLE);
+                    viewHolder.bookTitleView.setText(mCurrentRow.getBookListInRow().get(i)
+                            .getBookTitle());
+                    viewHolder.bookAuthorView.setText(mCurrentRow.getBookListInRow().get(i)
+                            .getBookAuthor());
+                    break;
+            }
+
         }
 
         return mRowView;
@@ -168,4 +171,5 @@ public class ShelfRowAdapter extends BaseAdapter {
         ImageLoader loader = new ImageLoader(imageView, mActivity);
         loader.execute(book);
     }
+
 }

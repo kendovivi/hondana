@@ -30,11 +30,15 @@ public class Const {
     /** Navigation Drawerのアイテム数 */
     public static final int NUMS_IN_NAVI = 5;
 
-    // SORT
+    // Sort
     /** コンテンツソート順 */
     public static final String SORT_TYPE = "sort_type";
     /** コンテンツタイトル順でソート */
     public static final int SORT_BY_CONTENT_TITLE = 1;
     /** コンテンツ著者順でソート */
     public static final int SORT_BY_CONTENT_AUTHOR = 2;
+
+    // Cache
+    /** percent of memory to use in cache */
+    public static final int PERCENT_TO_USE = 25;
 }

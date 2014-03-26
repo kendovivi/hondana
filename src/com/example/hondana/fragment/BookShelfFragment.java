@@ -82,6 +82,10 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
     private static final int FROM_SELECTED = 1;
     static BookShelfFragment mBookShelfFragment;
 
+    private MenuItem menuItem_show;
+    private MenuItem menuItem_sortByTitle;
+    private MenuItem menuItem_sortByAuthor;
+
     /**
      * @param shelfStyle　本棚表示スタイル
      * @param sortType　ソート順
@@ -132,12 +136,7 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
         }
 
         setRowListUponShelfStyle(mShelfStyle, mBookList);
-
-        // FixMe: 問題あり、menuが複数追加されることになった
-        if (mShelfStyle == Const.SHELF_STYLE_LIST) {
-            mHasMenu = true;
-            setHasOptionsMenu(mHasMenu);
-        }
+        mHasMenu = mShelfStyle == Const.SHELF_STYLE_LIST ? true : false;
     }
 
     @Override
@@ -396,29 +395,10 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
      * 本棚モードの切り替え　△△△要修正
      */
     public void ChangeShelfMode() {
-
-        switch (mShelfMode) {
-        // ノーマルモード　actionbarを無しに
-            case Const.SHELF_MODE_EDIT:
-                mShelfMode = Const.SHELF_MODE_NORMAL;
-                mHasMenu = false;
-                setHasOptionsMenu(mHasMenu);
-                break;
-            case Const.SHELF_MODE_NORMAL:
-                // 編集モード　
-                mShelfMode = Const.SHELF_MODE_EDIT;
-                mHasMenu = true;
-                setHasOptionsMenu(mHasMenu);
-                MenuItem menuItem_show = mMenu.findItem(R.id.actionbar_show_selected);
-                menuItem_show.setVisible(false);
-                if (mShelfStyle == Const.SHELF_STYLE_GRID) {
-                    MenuItem menuItem_sortByTitle = mMenu.findItem(R.id.actionbar_sort_by_title);
-                    MenuItem menuItem_sortByAuthor = mMenu.findItem(R.id.actionbar_sort_by_author);
-                    menuItem_sortByTitle.setVisible(false);
-                    menuItem_sortByAuthor.setVisible(false);
-                }
-                break;
-        }
+        mShelfMode = mShelfMode == Const.SHELF_MODE_EDIT ? Const.SHELF_MODE_NORMAL
+                : Const.SHELF_MODE_EDIT;
+        Log.d("ChangeShelfMode", "-->> Style = " + mShelfStyle + " Mode = " + mShelfMode);
+        setActionBar(mShelfStyle, mShelfMode);
         mListView.invalidateViews();
     }
 
@@ -426,21 +406,13 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
      * 本棚表示スタイルの切り替え todo: invalidateの代わりにnotifyDataSetChangedを使えるように
      */
     private void changeShelfStyle() {
-        switch (mShelfStyle) {
-            case Const.SHELF_STYLE_GRID:
-                mShelfStyle = Const.SHELF_STYLE_LIST;
-                mHasMenu = true;
-                break;
-            case Const.SHELF_STYLE_LIST:
-                mShelfStyle = Const.SHELF_STYLE_GRID;
-                mHasMenu = false;
-                break;
-        }
+        mShelfStyle = mShelfStyle == Const.SHELF_STYLE_GRID ? Const.SHELF_STYLE_LIST
+                : Const.SHELF_STYLE_GRID;
         // クラス変数mRowListをセット
         setRowListUponShelfStyle(mShelfStyle, mBookList);
         mShelfRowAdapter = new ShelfRowAdapter(getActivity(), mRowList, this);
         mListView.setAdapter(mShelfRowAdapter);
-        setHasOptionsMenu(mHasMenu);
+        setActionBar(mShelfStyle, mShelfMode);
         // 本棚コンテンツviewを再描画
         mListView.invalidateViews();
     }
@@ -543,6 +515,42 @@ public class BookShelfFragment extends Fragment implements OnClickListener {
         // コンテンツ数情報により、行リストを作る
         mRowInfo = new ShelfRowInfo(bookList, mNumsPerRow);
         mRowList = mRowInfo.getRowList();
+    }
+
+    private void setActionBar(int shelfStyle, int shelfMode) {
+        // 本棚スタイル
+        if (shelfStyle == Const.SHELF_STYLE_GRID) {
+            // ノーマル
+            if (shelfMode == Const.SHELF_MODE_NORMAL) {
+                setHasOptionsMenu(false);
+            } else {
+                // 編集
+                setHasOptionsMenu(true);
+                menuItem_show = mMenu.findItem(R.id.actionbar_show_selected);
+                menuItem_sortByTitle = mMenu.findItem(R.id.actionbar_sort_by_title);
+                menuItem_sortByAuthor = mMenu.findItem(R.id.actionbar_sort_by_author);
+                menuItem_show.setVisible(true);
+                menuItem_sortByTitle.setVisible(false);
+                menuItem_sortByAuthor.setVisible(false);
+            }
+        } else {
+            // リストスタイル
+            setHasOptionsMenu(true);
+            menuItem_show = mMenu.findItem(R.id.actionbar_show_selected);
+            menuItem_sortByTitle = mMenu.findItem(R.id.actionbar_sort_by_title);
+            menuItem_sortByAuthor = mMenu.findItem(R.id.actionbar_sort_by_author);
+            // ノーマル
+            if (shelfMode == Const.SHELF_MODE_NORMAL) {
+                menuItem_show.setVisible(false);
+                menuItem_sortByTitle.setVisible(true);
+                menuItem_sortByAuthor.setVisible(true);
+                // 編集
+            } else {
+                menuItem_show.setVisible(true);
+                menuItem_sortByTitle.setVisible(true);
+                menuItem_sortByAuthor.setVisible(true);
+            }
+        }
     }
 
 }
