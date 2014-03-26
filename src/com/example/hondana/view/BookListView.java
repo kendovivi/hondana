@@ -1,6 +1,8 @@
 
 package com.example.hondana.view;
 
+import android.view.View;
+
 import android.widget.LinearLayout;
 
 import android.util.Log;
@@ -48,11 +50,6 @@ public class BookListView extends ListView {
      */
     @Override
     protected void dispatchDraw(Canvas canvas) {
-        // mIsBottom = BookShelfRowAdapter.getIsGridViewBottom();
-        // mIsHeader = BookShelfRowAdapter.getIsGridViewHeader();
-        // 获取
-        // int rowCount = getChildCount() / mNumOfColumns;
-        // int top = rowCount > 0 ? getChildAt(0).getTop() : 0;
         int top = 0;
         // 判断第一行是否为有效contents数据，若是则取第一列的顶端高度，否则跳至下一排
         LinearLayout rowView = (LinearLayout) getChildAt(0);
@@ -63,7 +60,6 @@ public class BookListView extends ListView {
             top = getChildAt(0).getTop();
         }
 
-        //Log.d("第一个子view的其实高为： ", String.valueOf(top));
         int backgroundImgHeight = mShelfBackground.getHeight();
         int backgroundImgWidth = mShelfBackground.getWidth();
         int mScreenHeight = getHeight();

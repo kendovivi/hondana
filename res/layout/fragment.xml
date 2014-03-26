@@ -9,12 +9,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/border_no"
-            android:text="test" />
-
         <RelativeLayout
             android:id="@+id/fragment"
             android:layout_width="match_parent"
